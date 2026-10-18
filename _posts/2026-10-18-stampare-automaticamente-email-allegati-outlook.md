@@ -1,7 +1,7 @@
 ---
 title: "Stampare in automatico le email e gli allegati in arrivo su Outlook"
 date: 2026-10-18 17:00:00 +0200
-categories: [Outlook, Tips e Trick]
+categories: [Windows, Automazione]
 image: /assets/img/stampa-outlook/cover.png
 description: "Una macro VBA che stampa da sola ogni email in arrivo e i suoi allegati, con la parte che di solito manca: come farla partire all'arrivo della posta."
 published: true
@@ -25,8 +25,8 @@ Se invece ricevi decine di email miste, meglio limitarla a una cartella o a un m
 
 L'idea è semplice: Outlook permette di scrivere piccole automazioni in **VBA** (lo stesso linguaggio delle macro di Office). Noi scriviamo una macro che, ricevuta un'email:
 
-1. salva i suoi allegati in una cartella temporanea;
-2. manda ogni allegato alla stampante con il comando "stampa" di Windows;
+1. **stampa il corpo del messaggio** (testo ed eventuale contenuto HTML);
+2. salva gli allegati in una cartella temporanea e li manda alla stampante con il comando "stampa" di Windows;
 3. salta gli allegati "finti", cioè le immagini incorporate nella firma o nel corpo del messaggio, che altrimenti verrebbero stampate come fogli inutili.
 
 ## Passo 1 — Aprire l'editor delle macro
@@ -48,20 +48,25 @@ End Sub
 
 Private Sub ElementiPostaInArrivo_ItemAdd(ByVal Item As Object)
     If TypeName(Item) = "MailItem" Then
-        StampaAllegati Item
+        StampaEmail Item
     End If
 End Sub
 ```
 
-Da ora, ogni volta che arriva un messaggio, Outlook chiama la macro `StampaAllegati`.
+Da ora, ogni volta che arriva un messaggio, Outlook chiama la macro `StampaEmail`.
 
 ## Passo 3 — La macro che stampa
 
-La macro vera e propria salva gli allegati e li manda in stampa:
+La macro vera e propria stampa prima il corpo dell'email, poi salva gli allegati e li manda in stampa:
 
 ```vba
-Private Sub StampaAllegati(ByVal Messaggio As Outlook.MailItem)
+Private Sub StampaEmail(ByVal Messaggio As Outlook.MailItem)
     On Error GoTo Errore
+
+    ' 1. stampa il corpo dell'email
+    Messaggio.PrintOut
+
+    ' 2. stampa gli allegati (se ce ne sono)
     If Messaggio.Attachments.Count = 0 Then Exit Sub
 
     Dim cartella As String
@@ -124,7 +129,7 @@ Perché i PDF si stampino serve un lettore predefinito installato (per esempio A
 
 ## Limitarla a un mittente o a una cartella
 
-Per non stampare ogni cosa che arriva, aggiungi un filtro all'inizio di `StampaAllegati`. Per esempio, solo da un certo mittente:
+Per non stampare ogni cosa che arriva, aggiungi un filtro all'inizio di `StampaEmail`. Per esempio, solo da un certo mittente:
 
 ```vba
 If InStr(1, Messaggio.SenderEmailAddress, "ordini@fornitore.it", vbTextCompare) = 0 Then Exit Sub
@@ -153,12 +158,17 @@ End Sub
 
 Private Sub ElementiPostaInArrivo_ItemAdd(ByVal Item As Object)
     If TypeName(Item) = "MailItem" Then
-        StampaAllegati Item
+        StampaEmail Item
     End If
 End Sub
 
-Private Sub StampaAllegati(ByVal Messaggio As Outlook.MailItem)
+Private Sub StampaEmail(ByVal Messaggio As Outlook.MailItem)
     On Error GoTo Errore
+
+    ' 1. stampa il corpo dell'email
+    Messaggio.PrintOut
+
+    ' 2. stampa gli allegati (se ce ne sono)
     If Messaggio.Attachments.Count = 0 Then Exit Sub
 
     Dim cartella As String

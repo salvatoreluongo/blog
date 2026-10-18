@@ -66,4 +66,17 @@
       setTimeout(() => b.classList.remove("ok"), 1600);
     })
   );
+
+  // Tema chiaro/scuro (sole ⇆ luna). Se non è stato scelto, segue il sistema.
+  const root = document.documentElement;
+  const themeBtn = document.getElementById("theme-toggle");
+  const prefersDark = () => window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const currentTheme = () => root.getAttribute("data-theme") || (prefersDark() ? "dark" : "light");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const next = currentTheme() === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("tema", next); } catch (e) {}
+    });
+  }
 })();

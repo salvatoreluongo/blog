@@ -9,10 +9,12 @@ timezone: Europe/Rome
 
 author:
   name: "Salvatore Luongo"
-  # Avatar: per ora quello del profilo GitHub. Per usare il tuo memoji carica
-  # l'immagine in assets/img/ e scrivi qui: /assets/img/avatar.png
-  avatar: "https://github.com/salvatoreluongo.png"
+  # Logo grafico ispirato al terminale (file in assets/img/avatar.svg).
+  # Per tornare alla foto del profilo GitHub: https://github.com/salvatoreluongo.png
+  avatar: "/assets/img/avatar.svg"
   url: "https://salvatoreluongo.it"
+  # Email per il contatto diretto a fine articolo (lascia "" per usare il link al sito)
+  email: ""
 
 # Link mostrati nel menu (lascia vuoto per nasconderli)
 social:

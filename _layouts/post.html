@@ -34,6 +34,53 @@ layout: default
     {% include share.html %}
   </div>
 
+  <aside class="contact">
+    <p class="contact-title">Hai una domanda o una segnalazione?</p>
+    <p>Scrivimi: mi fa piacere confrontarmi su questi temi.</p>
+    {%- if site.author.email and site.author.email != "" -%}
+    <a class="contact-btn" href="mailto:{{ site.author.email }}">Mandami una mail</a>
+    {%- elsif site.social.linkedin and site.social.linkedin != "" -%}
+    <a class="contact-btn" href="{{ site.social.linkedin }}" target="_blank" rel="noopener">Scrivimi su LinkedIn</a>
+    {%- else -%}
+    <a class="contact-btn" href="{{ site.author.url }}" target="_blank" rel="noopener">Contattami dal sito</a>
+    {%- endif -%}
+  </aside>
+
+  {%- comment -%} Leggi anche: prima stessa categoria, poi riempi con i più recenti {%- endcomment -%}
+  {%- assign picked = "" -%}
+  {%- assign shown = 0 -%}
+  {%- for post in site.posts -%}
+    {%- if shown < 3 and post.url != page.url -%}
+      {%- assign match = false -%}
+      {%- for c in post.categories -%}{%- if page.categories contains c -%}{%- assign match = true -%}{%- endif -%}{%- endfor -%}
+      {%- if match -%}{%- unless picked contains post.url -%}
+        {%- assign picked = picked | append: post.url | append: "||" -%}
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endunless -%}{%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- for post in site.posts -%}
+    {%- if shown < 3 and post.url != page.url -%}{%- unless picked contains post.url -%}
+      {%- assign picked = picked | append: post.url | append: "||" -%}
+      {%- assign shown = shown | plus: 1 -%}
+    {%- endunless -%}{%- endif -%}
+  {%- endfor -%}
+  {%- if shown > 0 -%}
+  <section class="read-also">
+    <h2 class="read-also-title">Leggi anche</h2>
+    <div class="related">
+      {%- for post in site.posts -%}
+        {%- if picked contains post.url -%}
+        <a class="rel-item" href="{{ post.url | relative_url }}">
+          {%- if post.image -%}<img class="rel-thumb" src="{{ post.image | relative_url }}" alt="" loading="lazy">{%- else -%}<span class="rel-thumb rel-ph" aria-hidden="true">&gt;_</span>{%- endif -%}
+          <span class="rel-text"><strong>{{ post.title }}</strong><small>{% include date.html date=post.date %}</small></span>
+        </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+  {%- endif -%}
+
   <nav class="post-nav">
     {%- if page.previous -%}<a class="prev" href="{{ page.previous.url | relative_url }}"><span>← Precedente</span>{{ page.previous.title }}</a>{%- endif -%}
     {%- if page.next -%}<a class="next" href="{{ page.next.url | relative_url }}"><span>Successivo →</span>{{ page.next.title }}</a>{%- endif -%}

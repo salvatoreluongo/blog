@@ -5,6 +5,25 @@
       <img class="avatar" src="{{ site.author.avatar | relative_url }}" alt="{{ site.author.name }}" width="56" height="56">
     </a>
     <span class="brand">{{ site.title }}</span>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambia tema chiaro/scuro" title="Tema chiaro/scuro">
+      <svg class="sun-moon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <mask id="moon-mask">
+          <rect x="0" y="0" width="24" height="24" fill="white"/>
+          <circle class="mask-dot" cx="24" cy="4" r="6" fill="black"/>
+        </mask>
+        <circle class="sm-core" cx="12" cy="12" r="6" fill="currentColor" mask="url(#moon-mask)"/>
+        <g class="sm-rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="12" y1="1.6" x2="12" y2="3.4"/>
+          <line x1="12" y1="20.6" x2="12" y2="22.4"/>
+          <line x1="1.6" y1="12" x2="3.4" y2="12"/>
+          <line x1="20.6" y1="12" x2="22.4" y2="12"/>
+          <line x1="4.4" y1="4.4" x2="5.7" y2="5.7"/>
+          <line x1="18.3" y1="18.3" x2="19.6" y2="19.6"/>
+          <line x1="4.4" y1="19.6" x2="5.7" y2="18.3"/>
+          <line x1="18.3" y1="5.7" x2="19.6" y2="4.4"/>
+        </g>
+      </svg>
+    </button>
     <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu">
       <span>Menu</span>
       <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
