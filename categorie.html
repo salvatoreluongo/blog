@@ -6,7 +6,6 @@ permalink: /categorie/
 <h1 class="page-title">Categorie</h1>
 {%- assign cats = site.categories | sort -%}
 <div class="pills cat-index" id="cat-filter">
-  <a class="pill" data-cat="all" href="{{ '/categorie/' | relative_url }}">Tutte</a>
   {%- for cat in cats -%}<a class="pill" data-cat="{{ cat[0] | slugify }}" href="#{{ cat[0] | slugify }}">{{ cat[0] }} · {{ cat[1].size }}</a>{%- endfor -%}
 </div>
 {%- for cat in cats -%}
