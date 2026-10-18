@@ -2,6 +2,7 @@
 title: "Stampare in automatico le email e gli allegati in arrivo su Outlook"
 date: 2026-10-18 17:00:00 +0200
 categories: [Outlook, Tips e Trick]
+image: /assets/img/stampa-outlook/cover.png
 description: "Una macro VBA che stampa da sola ogni email in arrivo e i suoi allegati, con la parte che di solito manca: come farla partire all'arrivo della posta."
 published: true
 ---
