@@ -3,15 +3,12 @@ title: "Stampare in automatico le email e gli allegati in arrivo su Outlook"
 date: 2026-10-18 17:00:00 +0200
 categories: [Outlook, Tips e Trick]
 description: "Una macro VBA che stampa da sola ogni email in arrivo e i suoi allegati, con la parte che di solito manca: come farla partire all'arrivo della posta."
-fonte: "https://www.salvatoreluongo.it/come-stampare-automaticamente-une-mail-e-i-suoi-allegati-in-arrivo-in-outlook/"
-fonte_titolo: "Come stampare automaticamente un'e-mail e i suoi allegati in arrivo in Outlook"
-fonte_nome: "salvatoreluongo.it"
 published: true
 ---
 
-Ci sono uffici in cui ogni email che arriva va finire su carta: un ordine da evadere, una conferma da protocollare, un documento da firmare. Farlo a mano, una stampa alla volta, è una di quelle attività che mangiano tempo senza dare niente in cambio.
+Ci sono uffici in cui ogni email che arriva deve finire su carta: un ordine da evadere, una conferma da protocollare, un documento da firmare. Farlo a mano, una stampa alla volta, è una di quelle attività che mangiano tempo senza dare niente in cambio.
 
-In questo articolo vediamo come far sì che Outlook stampi **da solo** ogni email in arrivo e i suoi allegati, con una piccola macro. È la stessa procedura che avevo già descritto tempo fa, ma con un pezzo che allora avevo lasciato fuori e che è quello che fa davvero la differenza: **come far partire la macro automaticamente** quando arriva la posta.
+In questo articolo vediamo come far sì che Outlook stampi **da solo** ogni email in arrivo e i suoi allegati, con una piccola macro. Il punto su cui mi soffermo di più, perché è quello che fa davvero la differenza, è **come far partire la macro automaticamente** all'arrivo della posta.
 
 ## A chi serve davvero
 
@@ -35,10 +32,9 @@ L'idea è semplice: Outlook permette di scrivere piccole automazioni in **VBA** 
 
 Apri Outlook e premi **Alt + F11**: si apre l'editor di Visual Basic. Nella colonna a sinistra espandi *Project1 → Microsoft Outlook Objects* e fai doppio clic su **ThisOutlookSession**.
 
-
 ## Passo 2 — Far partire la macro all'arrivo della posta
 
-Questo è il pezzo chiave. Perché la stampa sia davvero automatica, Outlook deve "accorgersi" di ogni nuova email. Incolla in cima a **ThisOutlookSession** questo codice, che si aggancia alla Posta in arrivo:
+Questo è il pezzo chiave. Perché la stampa sia davvero automatica, Outlook deve "accorgersi" di ogni nuova email. Il codice che si aggancia alla Posta in arrivo è questo:
 
 ```vba
 Private WithEvents ElementiPostaInArrivo As Outlook.Items
@@ -56,11 +52,11 @@ Private Sub ElementiPostaInArrivo_ItemAdd(ByVal Item As Object)
 End Sub
 ```
 
-Da ora, ogni volta che arriva un messaggio, Outlook chiama la nostra macro `StampaAllegati`.
+Da ora, ogni volta che arriva un messaggio, Outlook chiama la macro `StampaAllegati`.
 
 ## Passo 3 — La macro che stampa
 
-Sotto il codice precedente, incolla la macro vera e propria:
+La macro vera e propria salva gli allegati e li manda in stampa:
 
 ```vba
 Private Sub StampaAllegati(ByVal Messaggio As Outlook.MailItem)
@@ -90,7 +86,7 @@ Errore:
 End Sub
 ```
 
-E infine la funzione che riconosce gli allegati incorporati, così da non stampare loghi e immagini della firma:
+E la funzione che riconosce gli allegati incorporati, così da non stampare loghi e immagini della firma:
 
 ```vba
 Private Function AllegatoIncorporato(ByVal Messaggio As Outlook.MailItem, _
@@ -107,7 +103,6 @@ End Function
 ```
 
 Salva con l'icona del dischetto e chiudi l'editor. La prima volta, chiudi e riapri Outlook per far partire `Application_Startup`.
-
 
 ## Stampare solo un tipo di file (es. solo i PDF)
 
@@ -142,6 +137,62 @@ In alternativa, con una **regola di Outlook** puoi spostare in una cartella dedi
 - **Stampa senza chiedere.** La macro non ti avvisa: assicurati che la stampante giusta sia quella predefinita, o rischi di stampare documenti riservati sulla stampante sbagliata.
 - **Privacy.** Stampare in automatico significa che ogni allegato finisce su carta, anche quelli che non volevi. Su una casella condivisa valuta bene cosa lasci passare.
 
-## Le mie considerazioni
+## Il codice completo, pronto da incollare
 
-> Qui aggiungi la tua prova diretta: su quale versione di Outlook l'hai testata, se hai usato la variante "solo PDF", quanto tempo ti fa risparmiare davvero e in quale situazione l'hai messa in produzione.
+Se vuoi andare veloce, ecco tutto il codice da copiare e incollare in un colpo solo dentro **ThisOutlookSession**. Stampa ogni allegato di ogni email in arrivo:
+
+```vba
+Private WithEvents ElementiPostaInArrivo As Outlook.Items
+
+Private Sub Application_Startup()
+    Dim ns As Outlook.NameSpace
+    Set ns = Application.GetNamespace("MAPI")
+    Set ElementiPostaInArrivo = ns.GetDefaultFolder(olFolderInbox).Items
+End Sub
+
+Private Sub ElementiPostaInArrivo_ItemAdd(ByVal Item As Object)
+    If TypeName(Item) = "MailItem" Then
+        StampaAllegati Item
+    End If
+End Sub
+
+Private Sub StampaAllegati(ByVal Messaggio As Outlook.MailItem)
+    On Error GoTo Errore
+    If Messaggio.Attachments.Count = 0 Then Exit Sub
+
+    Dim cartella As String
+    cartella = Environ("TEMP") & "\ATMP_" & Format(Now, "yyyymmdd_hhnnss") & "\"
+    MkDir cartella
+
+    Dim shell As Object
+    Set shell = CreateObject("Shell.Application")
+
+    Dim allegato As Outlook.Attachment
+    For Each allegato In Messaggio.Attachments
+        If Not AllegatoIncorporato(Messaggio, allegato) Then
+            Dim percorso As String
+            percorso = cartella & allegato.FileName
+            allegato.SaveAsFile percorso
+            shell.Namespace(cartella).ParseName(allegato.FileName).InvokeVerb "Stampa"
+        End If
+    Next
+
+    Exit Sub
+Errore:
+    MsgBox "Errore " & Err.Number & ": " & Err.Description, vbExclamation
+End Sub
+
+Private Function AllegatoIncorporato(ByVal Messaggio As Outlook.MailItem, _
+                                     ByVal allegato As Outlook.Attachment) As Boolean
+    Dim cid As String
+    On Error Resume Next
+    cid = allegato.PropertyAccessor.GetProperty( _
+          "http://schemas.microsoft.com/mapi/proptag/0x3712001F")
+    On Error GoTo 0
+    If cid <> "" And Messaggio.BodyFormat = olFormatHTML Then
+        AllegatoIncorporato = (InStr(Messaggio.HTMLBody, "cid:" & cid) > 0)
+    End If
+End Function
+```
+
+Incollato questo, salva, chiudi e riapri Outlook: da quel momento la stampa parte da sola.

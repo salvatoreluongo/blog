@@ -7,7 +7,6 @@
     {%- else -%}
     <span class="cover-fallback">{{ p.title | truncatewords: 6 }}</span>
     {%- endif -%}
-    <span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor"/></svg></span>
   </a>
   {%- if p.categories.size > 0 -%}
   <div class="pills">
