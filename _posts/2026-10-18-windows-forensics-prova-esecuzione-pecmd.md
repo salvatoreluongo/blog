@@ -1,7 +1,7 @@
 ---
 title: "Windows Forensics: la prova d'esecuzione di un programma con PECmd"
 date: 2026-10-18 18:00:00 +0200
-categories: [Sicurezza]
+categories: [Windows, Forensics]
 image: /assets/img/pecmd/cover.png
 description: "Un programma è stato eseguito su quel PC? Quante volte e quando? I file Prefetch di Windows lo sanno, e con PECmd di Eric Zimmerman si leggono in pochi secondi."
 published: true
