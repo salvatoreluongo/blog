@@ -43,6 +43,7 @@ img { max-width: 100%; }
 .progress { position: fixed; top: 0; left: 0; right: 0; height: 5px; z-index: 300; background: transparent; }
 .progress { height: 4px; }
 .progress span { display: block; height: 100%; width: 0; background: var(--progress); transition: width .08s linear; }
+body:not(.is-post) .progress { display: none; }   /* la barra di lettura solo negli articoli */
 
 /* ── Header ───────────────────────────────────────── */
 .site-header { position: sticky; top: 0; z-index: 200; background: var(--header-bg); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); }
@@ -166,6 +167,18 @@ body.menu-open { overflow: hidden; }
 .contact-title { font-weight: 800 !important; color: var(--ink) !important; font-size: 19px !important; margin-bottom: 4px !important; }
 .contact-btn { display: inline-block; margin-top: 14px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; font-size: 16px; padding: 11px 22px; border-radius: 999px; transition: transform .15s, filter .15s; }
 .contact-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.contact-btn:disabled { opacity: .6; cursor: default; transform: none; }
+/* Modulo di contatto */
+.cform { margin-top: 16px; display: grid; gap: 12px; }
+.cform-in { width: 100%; font: 400 16px var(--font); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.cform-in::placeholder { color: var(--muted); }
+.cform-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,105,63,.18); }
+textarea.cform-in { resize: vertical; min-height: 96px; }
+.cform .contact-btn { justify-self: start; margin-top: 2px; }
+.cform-msg { margin: 4px 0 0 !important; font-size: 15px !important; font-weight: 600; min-height: 1.2em; }
+.cform-msg.ok { color: #2e7d32; }
+.cform-msg.err { color: #c0392b; }
+.hp-field { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
 /* ── Leggi anche ──────────────────────────────────── */
 .read-also { margin: 40px 0 0; }

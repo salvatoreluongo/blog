@@ -1,7 +1,7 @@
 ---
 title: "Come ripristinare la partizione di boot UEFI quando Windows non si avvia"
 date: 2026-10-18 16:00:00 +0200
-categories: [Windows, Ripristino]
+categories: [Windows]
 image: /assets/img/uefi/cover.webp
 description: "Windows non parte più per colpa della partizione EFI danneggiata? Si recupera dal Prompt dei comandi con bcdboot, prima senza formattare nulla: ecco la procedura passo passo."
 published: true

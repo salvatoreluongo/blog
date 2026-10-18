@@ -79,4 +79,30 @@
       try { localStorage.setItem("tema", next); } catch (e) {}
     });
   }
+
+  // Modulo di contatto (Web3Forms): invio senza ricaricare la pagina
+  document.querySelectorAll(".cform").forEach((form) => {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = form.querySelector(".cform-msg");
+      const btn = form.querySelector("button[type=submit]");
+      if (btn) btn.disabled = true;
+      if (msg) { msg.className = "cform-msg"; msg.textContent = "Invio in corso…"; }
+      try {
+        const res = await fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          form.reset();
+          if (msg) { msg.textContent = "Messaggio inviato, grazie! Ti rispondo al più presto."; msg.classList.add("ok"); }
+        } else {
+          if (msg) { msg.textContent = (data && data.message) ? data.message : "Qualcosa è andato storto. Riprova."; msg.classList.add("err"); }
+        }
+      } catch (err) {
+        if (msg) { msg.textContent = "Errore di rete, riprova più tardi."; msg.classList.add("err"); }
+      } finally {
+        if (btn) btn.disabled = false;
+        if (window.hcaptcha) { try { window.hcaptcha.reset(); } catch (e2) {} }
+      }
+    });
+  });
 })();

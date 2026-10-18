@@ -34,17 +34,38 @@ layout: default
     {% include share.html %}
   </div>
 
-  <aside class="contact">
+  <aside class="contact" id="contatti">
     <p class="contact-title">Hai una domanda o una segnalazione?</p>
+    {%- if site.web3forms_key and site.web3forms_key != "" -%}
+    <p>Scrivimi usando il modulo qui sotto: ti rispondo io.</p>
+    <form class="cform" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="{{ site.web3forms_key }}">
+      <input type="hidden" name="subject" value="Nuovo messaggio dal blog">
+      <input type="hidden" name="from_name" value="Blog · {{ site.author.name }}">
+      <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input class="cform-in" type="text" name="name" placeholder="Il tuo nome" required>
+      <input class="cform-in" type="email" name="email" placeholder="La tua email" required>
+      <textarea class="cform-in" name="message" rows="4" placeholder="Il tuo messaggio" required></textarea>
+      {%- if site.hcaptcha_sitekey and site.hcaptcha_sitekey != "" -%}
+      <div class="h-captcha" data-sitekey="{{ site.hcaptcha_sitekey }}"></div>
+      {%- endif -%}
+      <button type="submit" class="contact-btn">Invia messaggio</button>
+      <p class="cform-msg" aria-live="polite"></p>
+    </form>
+    {%- elsif site.author.email and site.author.email != "" -%}
     <p>Scrivimi: mi fa piacere confrontarmi su questi temi.</p>
-    {%- if site.author.email and site.author.email != "" -%}
     <a class="contact-btn" href="mailto:{{ site.author.email }}">Mandami una mail</a>
     {%- elsif site.social.linkedin and site.social.linkedin != "" -%}
+    <p>Scrivimi: mi fa piacere confrontarmi su questi temi.</p>
     <a class="contact-btn" href="{{ site.social.linkedin }}" target="_blank" rel="noopener">Scrivimi su LinkedIn</a>
     {%- else -%}
+    <p>Scrivimi: mi fa piacere confrontarmi su questi temi.</p>
     <a class="contact-btn" href="{{ site.author.url }}" target="_blank" rel="noopener">Contattami dal sito</a>
     {%- endif -%}
   </aside>
+  {%- if site.web3forms_key != "" and site.hcaptcha_sitekey != "" -%}
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  {%- endif -%}
 
   {%- comment -%} Leggi anche: prima stessa categoria, poi riempi con i più recenti {%- endcomment -%}
   {%- assign picked = "" -%}

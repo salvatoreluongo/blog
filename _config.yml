@@ -28,6 +28,13 @@ baseurl: "/blog"
 # Token di Cloudflare Web Analytics (lo ottieni dalla dashboard Cloudflare)
 cf_analytics_token: "27b580cf9b89486eb7659cdb3bfa8a02"
 
+# Modulo di contatto a fine articolo.
+# 1) Crea gratis una "Access Key" su https://web3forms.com (basta la tua email) e incollala qui:
+web3forms_key: ""
+# 2) Captcha anti-spam FACOLTATIVO: incolla la Site Key di https://www.hcaptcha.com
+#    (il Secret va messo nella dashboard di Web3Forms). Lascia "" per tenere solo l'honeypot.
+hcaptcha_sitekey: ""
+
 # Quanti articoli in home
 home_posts: 12
 

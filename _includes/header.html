@@ -49,12 +49,11 @@
         {%- endfor -%}
       </ul>
 
+      {%- if site.social.linkedin != "" -%}
       <p class="menu-label">Seguimi</p>
       <ul class="menu-links">
-        {%- if site.social.linkedin != "" %}<li><a href="{{ site.social.linkedin }}" target="_blank" rel="noopener">LinkedIn</a></li>{% endif -%}
-        {%- if site.social.github != "" %}<li><a href="{{ site.social.github }}" target="_blank" rel="noopener">GitHub</a></li>{% endif -%}
-        {%- if site.social.sito != "" %}<li><a href="{{ site.social.sito }}" target="_blank" rel="noopener">Sito</a></li>{% endif -%}
-        <li><a href="{{ '/feed.xml' | relative_url }}">Feed RSS</a></li>
+        <li><a href="{{ site.social.linkedin }}" target="_blank" rel="noopener">LinkedIn</a></li>
       </ul>
+      {%- endif -%}
     </div>
   </nav>
