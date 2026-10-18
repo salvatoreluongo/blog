@@ -24,6 +24,9 @@ social:
 url: "https://salvatoreluongo.github.io"
 baseurl: "/blog"
 
+# Token di Cloudflare Web Analytics (lo ottieni dalla dashboard Cloudflare)
+cf_analytics_token: ""
+
 # Quanti articoli in home
 home_posts: 12
 
