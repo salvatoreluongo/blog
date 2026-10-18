@@ -9,9 +9,8 @@ timezone: Europe/Rome
 
 author:
   name: "Salvatore Luongo"
-  # Logo grafico ispirato al terminale (file in assets/img/avatar.svg).
-  # Per tornare alla foto del profilo GitHub: https://github.com/salvatoreluongo.png
-  avatar: "/assets/img/avatar.svg"
+  # Immagine del profilo (faccina pixel). Alternative in assets/img/: avatar.svg (logo terminale).
+  avatar: "/assets/img/avatar.png"
   url: "https://salvatoreluongo.it"
   # Email per il contatto diretto a fine articolo (lascia "" per usare il link al sito)
   email: ""
