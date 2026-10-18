@@ -165,6 +165,7 @@ body.menu-open { overflow: hidden; }
 .copy-code:hover { background: rgba(255,255,255,.2); }
 .copy-code.ok { background: #2e7d32; color: #fff; border-color: #2e7d32; opacity: 1; }
 .code-wrap.scrollable:not(.at-end)::after { content: ""; position: absolute; top: 0; right: 0; bottom: 8px; width: 44px; border-radius: 0 16px 16px 0; background: linear-gradient(to right, rgba(15,23,42,0), rgba(15,23,42,.92)); pointer-events: none; }
+@media (max-width: 600px) { .copy-code { display: none; } }   /* copia codice solo su desktop */
 
 /* Indice cliccabile */
 .toc { background: var(--pill); border-radius: 18px; padding: 18px 22px; margin: 30px 0 0; }
@@ -193,11 +194,11 @@ body.menu-open { overflow: hidden; }
 .contact { background: var(--source-bg); border-radius: 20px; padding: 22px 24px; margin: 30px 0 0; }
 .contact p { margin: 0; color: var(--body); font-size: 16px; line-height: 1.6; }
 .contact-title { font-weight: 800 !important; color: var(--ink) !important; font-size: 19px !important; margin-bottom: 4px !important; }
-.contact-btn { display: inline-flex; align-items: center; gap: 9px; margin-top: 14px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; font-size: 16px; line-height: 1; padding: 14px 28px; border: 0; border-radius: 999px; cursor: pointer; box-shadow: 0 6px 18px rgba(232,105,63,.35); transition: transform .15s ease, box-shadow .2s ease, filter .2s ease; }
+.contact-btn { display: inline-flex; align-items: center; gap: 9px; margin-top: 14px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; font-size: 16px; line-height: 1; padding: 14px 28px; border: 0; border-radius: 999px; cursor: pointer; transition: transform .15s ease, filter .2s ease; }
 .contact-btn svg { width: 18px; height: 18px; }
-.contact-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(232,105,63,.46); filter: brightness(1.04); }
-.contact-btn:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(232,105,63,.34); }
-.contact-btn:disabled { opacity: .55; cursor: default; transform: none; box-shadow: none; filter: none; }
+.contact-btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
+.contact-btn:active { transform: translateY(0); }
+.contact-btn:disabled { opacity: .55; cursor: default; transform: none; filter: none; }
 /* Modulo di contatto */
 .cform { margin-top: 16px; display: grid; gap: 12px; }
 .cform-in { width: 100%; font: 400 16px var(--font); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
