@@ -2,6 +2,7 @@
 title: "Come ripristinare la partizione di boot UEFI quando Windows non si avvia"
 date: 2026-10-18 16:00:00 +0200
 categories: [Windows, Tips e Trick]
+image: /assets/img/uefi/cover.webp
 description: "Windows non parte più per colpa della partizione EFI danneggiata? Si recupera dal Prompt dei comandi con diskpart e bcdboot: ecco la procedura passo passo."
 published: true
 ---
@@ -30,6 +31,12 @@ La partizione **C:** con i tuoi file e Windows **non** va toccata: noi formattia
 3. In basso a sinistra clicca **Ripristina il computer** (non "Installa").
 4. Scegli **Risoluzione dei problemi → Prompt dei comandi**.
 
+![Alla schermata di installazione, in basso a sinistra, clicca su "Ripristina il computer"](/blog/assets/img/uefi/01-ripristina.webp)
+*Alla schermata di installazione, in basso a sinistra, clicca su "Ripristina il computer"*
+
+![Nelle Opzioni avanzate scegli "Prompt dei comandi"](/blog/assets/img/uefi/02-prompt.webp)
+*Nelle Opzioni avanzate scegli "Prompt dei comandi"*
+
 ## Passo 2 — Trovare la partizione EFI
 
 Avvia lo strumento di gestione dei dischi:
@@ -51,6 +58,9 @@ Vedrai un elenco. Tipicamente:
 - la partizione **EFI**: piccola (100–300 MB), file system **FAT32**, spesso senza lettera.
 
 Annota il **numero** del volume EFI (nell'esempio supponiamo sia il `2`).
+
+![Con "list volume" individui la partizione EFI: piccola (100 MB) e in FAT32](/blog/assets/img/uefi/03-list-volume.webp)
+*Con "list volume" individui la partizione EFI: piccola (100 MB) e in FAT32*
 
 ## Passo 3 — Assegnare una lettera alla partizione EFI
 
@@ -74,6 +84,9 @@ list volume
 
 Esci da diskpart e pulisci lo schermo:
 
+![Dopo "select volume 2" e "assign letter=Z", la partizione EFI mostra la lettera Z](/blog/assets/img/uefi/04-assign.webp)
+*Dopo "select volume 2" e "assign letter=Z", la partizione EFI mostra la lettera Z*
+
 ```
 exit
 cls
@@ -92,6 +105,9 @@ dir
 
 Dovresti trovare le cartelle `Microsoft` e `Boot`: è la conferma che questa è davvero la partizione di avvio. Poi torna e pulisci:
 
+![Dentro la partizione EFI trovi le cartelle Microsoft e Boot](/blog/assets/img/uefi/06-efi.webp)
+*Dentro la partizione EFI trovi le cartelle Microsoft e Boot*
+
 ```
 cls
 ```
@@ -105,6 +121,9 @@ format Z: /fs:fat32 /q
 ```
 
 Quando chiede conferma, digita **S** e premi Invio. Al termine:
+
+![La formattazione della partizione EFI in corso; conferma con S](/blog/assets/img/uefi/08-format.webp)
+*La formattazione della partizione EFI in corso; conferma con S*
 
 ```
 cls
@@ -126,6 +145,9 @@ bcdboot C:\Windows /s Z: /f UEFI
 ```
 
 Se tutto è andato bene compare il messaggio **"Creazione dei file di avvio completata"**. Questo comando ricrea sulla partizione EFI tutto ciò che serve a far partire Windows.
+
+![Il messaggio "Creazione dei file di avvio completata" conferma che è andato tutto bene](/blog/assets/img/uefi/10-bcdboot.webp)
+*Il messaggio "Creazione dei file di avvio completata" conferma che è andato tutto bene*
 
 ## Passo 7 — Riavviare
 
