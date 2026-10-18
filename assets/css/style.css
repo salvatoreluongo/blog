@@ -110,6 +110,8 @@ body.menu-open { overflow: hidden; }
 .list li { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 18px; }
 .list a { text-decoration: none; font-weight: 600; color: var(--ink); }
 .list span { color: var(--muted); white-space: nowrap; font-size: 15px; }
+.cat-index { margin-bottom: 8px; }
+.cat-index .pill.active { background: var(--accent); color: #fff; }
 .cat-section { scroll-margin-top: 100px; }
 .cat-section .cards { padding-top: 10px; gap: 48px; }
 

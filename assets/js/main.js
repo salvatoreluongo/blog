@@ -80,6 +80,27 @@
     });
   }
 
+  // Pagina Categorie: mostra solo la categoria selezionata
+  const catFilter = document.getElementById("cat-filter");
+  if (catFilter) {
+    const sections = Array.prototype.slice.call(document.querySelectorAll(".cat-section"));
+    const pills = Array.prototype.slice.call(catFilter.querySelectorAll("[data-cat]"));
+    const applyCat = (cat) => {
+      const all = !cat || cat === "all";
+      sections.forEach((s) => { s.style.display = (all || s.dataset.cat === cat) ? "" : "none"; });
+      pills.forEach((p) => p.classList.toggle("active", p.dataset.cat === (all ? "all" : cat)));
+    };
+    const fromHash = () => (location.hash || "").replace("#", "");
+    applyCat(fromHash());
+    window.addEventListener("hashchange", () => applyCat(fromHash()));
+    pills.forEach((p) => p.addEventListener("click", (e) => {
+      const cat = p.dataset.cat;
+      if (cat === "all") { e.preventDefault(); if (location.hash) history.replaceState(null, "", location.pathname + location.search); applyCat("all"); }
+      else { applyCat(cat); }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }));
+  }
+
   // Modulo di contatto (Web3Forms): invio senza ricaricare la pagina
   document.querySelectorAll(".cform").forEach((form) => {
     form.addEventListener("submit", async (e) => {
