@@ -80,6 +80,62 @@
     });
   }
 
+  // Indice cliccabile + pulsanti "Copia" sui blocchi di codice (solo negli articoli)
+  const content = document.querySelector(".post-content");
+  if (content) {
+    const slug = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    // Indice
+    const headings = Array.prototype.slice.call(content.querySelectorAll("h2"));
+    const toc = document.getElementById("toc");
+    if (toc && headings.length >= 2) {
+      const ul = toc.querySelector("ul");
+      const used = {};
+      headings.forEach((h) => {
+        let id = h.id || slug(h.textContent);
+        while (used[id]) id = id + "-1";
+        used[id] = true; h.id = id;
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + id; a.textContent = h.textContent;
+        li.appendChild(a); ul.appendChild(li);
+      });
+      toc.hidden = false;
+    }
+    // Pulsante "Copia" su ogni blocco di codice
+    content.querySelectorAll("pre").forEach((pre) => {
+      if (pre.closest(".code-wrap")) return;
+      const wrap = document.createElement("div");
+      wrap.className = "code-wrap";
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "copy-code"; btn.textContent = "Copia";
+      wrap.appendChild(btn);
+      btn.addEventListener("click", async () => {
+        const code = pre.innerText;
+        try { await navigator.clipboard.writeText(code); }
+        catch (e) {
+          const ta = document.createElement("textarea"); ta.value = code;
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); } catch (e2) {}
+          ta.remove();
+        }
+        btn.classList.add("ok"); btn.textContent = "Copiato!";
+        setTimeout(() => { btn.classList.remove("ok"); btn.textContent = "Copia"; }, 1500);
+      });
+      // indicatore di scroll orizzontale (mobile)
+      const mark = () => {
+        const can = pre.scrollWidth - pre.clientWidth > 2;
+        wrap.classList.toggle("scrollable", can);
+        wrap.classList.toggle("at-end", pre.scrollLeft + pre.clientWidth >= pre.scrollWidth - 2);
+      };
+      pre.addEventListener("scroll", mark, { passive: true });
+      window.addEventListener("resize", mark);
+      mark();
+    });
+  }
+
   // Pagina Categorie: mostra solo la categoria selezionata
   const catFilter = document.getElementById("cat-filter");
   if (catFilter) {
