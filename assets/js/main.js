@@ -43,11 +43,27 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(false); });
 
   // Copia il link dell'articolo
+  function toast(msg) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 1600);
+  }
   document.querySelectorAll("[data-copy]").forEach((b) =>
     b.addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText(b.dataset.copy); } catch (e) {}
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy);
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = b.dataset.copy; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e2) {}
+        ta.remove();
+      }
       b.classList.add("ok");
-      setTimeout(() => b.classList.remove("ok"), 1500);
+      toast("Link copiato!");
+      setTimeout(() => b.classList.remove("ok"), 1600);
     })
   );
 })();

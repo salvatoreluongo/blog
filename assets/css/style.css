@@ -91,7 +91,13 @@ body.menu-open { overflow: hidden; }
 .sh:hover { transform: translateY(-2px); }
 .sh-li { background: #0a66c2; } .sh-fb { background: #1877f2; } .sh-x { background: #111; }
 .sh-wa { background: #25d366; } .sh-tg { background: #229ed9; } .sh-copy { background: var(--pill); color: var(--ink); }
-.sh-copy.ok { background: #2e7d32; color: #fff; }
+.sh-copy.ok { background: #2e7d32; color: #fff; animation: pop .3s ease; }
+.ic-check { display: none; }
+.sh-copy.ok .ic-link { display: none; }
+.sh-copy.ok .ic-check { display: block; }
+@keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 18px); background: var(--ink); color: #fff; padding: 11px 20px; border-radius: 999px; font: 600 14px var(--font); opacity: 0; transition: opacity .25s, transform .25s; z-index: 400; box-shadow: 0 8px 24px rgba(0,0,0,.22); pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 .post-content { font-size: 19px; line-height: 1.8; color: var(--body); margin-top: 30px; }
 .post-content p { margin: 0 0 1.3em; }
