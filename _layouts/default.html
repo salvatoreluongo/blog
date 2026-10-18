@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'it-IT' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% seo %}
+  {% feed_meta %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+  <link rel="icon" href="{{ site.author.avatar | relative_url }}">
+</head>
+<body class="{% if page.layout == 'post' %}is-post{% endif %}">
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+  {% include header.html %}
+
+  <main class="container">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer container">
+    <p>© {{ site.time | date: "%Y" }} {{ site.author.name }} · <a href="{{ '/feed.xml' | relative_url }}">Feed RSS</a>{% if site.social.sito != "" %} · <a href="{{ site.social.sito }}">{{ site.social.sito | remove: "https://" }}</a>{% endif %}</p>
+  </footer>
+
+  <button class="to-top" id="to-top" aria-label="Torna su">
+    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
+</body>
+</html>

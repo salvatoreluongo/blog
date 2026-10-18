@@ -1,0 +1,41 @@
+---
+layout: default
+---
+<article class="post" id="article">
+  {%- if page.image -%}
+  <img class="post-cover" src="{{ page.image | relative_url }}" alt="">
+  {%- endif -%}
+
+  {%- if page.categories.size > 0 -%}
+  <div class="pills">
+    {%- for c in page.categories -%}<a class="pill" href="{{ '/categorie/' | relative_url }}#{{ c | slugify }}">{{ c }}</a>{%- endfor -%}
+  </div>
+  {%- endif -%}
+
+  <h1 class="post-title">{{ page.title }}</h1>
+  <p class="post-meta">{{ site.author.name }} <span class="dot">•</span> <time datetime="{{ page.date | date_to_xmlschema }}">{% include date.html date=page.date %}</time>
+    <span class="dot">•</span> {% include reading-time.html content=content %}</p>
+
+  {% include share.html %}
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+
+  {%- if page.fonte -%}
+  <aside class="source">
+    <p class="source-label">Lo spunto</p>
+    <p>Questo articolo nasce da <a href="{{ page.fonte }}" target="_blank" rel="noopener">{% if page.fonte_titolo %}{{ page.fonte_titolo }}{% else %}questa notizia{% endif %}</a>{% if page.fonte_nome %} ({{ page.fonte_nome }}){% endif %}. Le prove e le considerazioni sono mie.</p>
+  </aside>
+  {%- endif -%}
+
+  <div class="post-end">
+    <p class="share-title">Ti è stato utile? Condividilo</p>
+    {% include share.html %}
+  </div>
+
+  <nav class="post-nav">
+    {%- if page.previous -%}<a class="prev" href="{{ page.previous.url | relative_url }}"><span>← Precedente</span>{{ page.previous.title }}</a>{%- endif -%}
+    {%- if page.next -%}<a class="next" href="{{ page.next.url | relative_url }}"><span>Successivo →</span>{{ page.next.title }}</a>{%- endif -%}
+  </nav>
+</article>

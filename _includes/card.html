@@ -1,0 +1,23 @@
+{%- comment -%} Scheda articolo per home, archivio e categorie. Parametro: include.post {%- endcomment -%}
+{%- assign p = include.post -%}
+<article class="card">
+  <a class="card-cover" href="{{ p.url | relative_url }}" aria-label="{{ p.title | escape }}">
+    {%- if p.image -%}
+    <img src="{{ p.image | relative_url }}" alt="" loading="lazy">
+    {%- else -%}
+    <span class="cover-fallback">{{ p.title | truncatewords: 6 }}</span>
+    {%- endif -%}
+    <span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor"/></svg></span>
+  </a>
+  {%- if p.categories.size > 0 -%}
+  <div class="pills">
+    {%- for c in p.categories -%}<a class="pill" href="{{ '/categorie/' | relative_url }}#{{ c | slugify }}">{{ c }}</a>{%- endfor -%}
+  </div>
+  {%- endif -%}
+  <h2 class="card-title"><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h2>
+  <div class="card-foot">
+    <img class="mini-avatar" src="{{ site.author.avatar | relative_url }}" alt="" width="48" height="48">
+    <div class="byline"><strong>{{ site.author.name }}</strong><time datetime="{{ p.date | date_to_xmlschema }}">{% include date.html date=p.date %}</time></div>
+    <a class="more" href="{{ p.url | relative_url }}">Leggi di più</a>
+  </div>
+</article>

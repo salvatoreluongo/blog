@@ -1,0 +1,3 @@
+{%- assign idx = include.date | date: "%-m" | minus: 1 -%}
+{%- assign mesi = "gen,feb,mar,apr,mag,giu,lug,ago,set,ott,nov,dic" | split: "," -%}
+{{- include.date | date: "%-d" }} {{ mesi[idx] }} {{ include.date | date: "%Y" -}}
