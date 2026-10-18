@@ -2,12 +2,11 @@
 title: "Stampare in automatico le email e gli allegati in arrivo su Outlook"
 date: 2026-10-18 17:00:00 +0200
 categories: [Outlook, Tips e Trick]
-image: /assets/img/stampa-outlook/cover.png
 description: "Una macro VBA che stampa da sola ogni email in arrivo e i suoi allegati, con la parte che di solito manca: come farla partire all'arrivo della posta."
 fonte: "https://www.salvatoreluongo.it/come-stampare-automaticamente-une-mail-e-i-suoi-allegati-in-arrivo-in-outlook/"
 fonte_titolo: "Come stampare automaticamente un'e-mail e i suoi allegati in arrivo in Outlook"
 fonte_nome: "salvatoreluongo.it"
-published: false
+published: true
 ---
 
 Ci sono uffici in cui ogni email che arriva va finire su carta: un ordine da evadere, una conferma da protocollare, un documento da firmare. Farlo a mano, una stampa alla volta, è una di quelle attività che mangiano tempo senza dare niente in cambio.
@@ -36,7 +35,6 @@ L'idea è semplice: Outlook permette di scrivere piccole automazioni in **VBA** 
 
 Apri Outlook e premi **Alt + F11**: si apre l'editor di Visual Basic. Nella colonna a sinistra espandi *Project1 → Microsoft Outlook Objects* e fai doppio clic su **ThisOutlookSession**.
 
-> **Da completare:** screenshot dell'editor VBA con ThisOutlookSession aperto
 
 ## Passo 2 — Far partire la macro all'arrivo della posta
 
@@ -110,7 +108,6 @@ End Function
 
 Salva con l'icona del dischetto e chiudi l'editor. La prima volta, chiudi e riapri Outlook per far partire `Application_Startup`.
 
-> **Da completare:** screenshot di una stampa partita in automatico (coda di stampa o foglio uscito)
 
 ## Stampare solo un tipo di file (es. solo i PDF)
 
