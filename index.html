@@ -1,0 +1,20 @@
+---
+layout: default
+title: Home
+---
+<section class="intro">
+  <h1>{{ site.tagline }}</h1>
+  <p>{{ site.description }}</p>
+</section>
+
+<section class="cards">
+  {%- for post in site.posts limit: site.home_posts -%}
+    {% include card.html post=post %}
+  {%- else -%}
+    <p class="empty">Il primo articolo è in arrivo.</p>
+  {%- endfor -%}
+</section>
+
+{%- if site.posts.size > site.home_posts -%}
+<p class="all-link"><a href="{{ '/archivio/' | relative_url }}">Tutti gli articoli →</a></p>
+{%- endif -%}

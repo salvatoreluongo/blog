@@ -1,0 +1,17 @@
+---
+layout: default
+title: Tutti gli articoli
+permalink: /archivio/
+---
+<h1 class="page-title">Tutti gli articoli</h1>
+{%- assign by_year = site.posts | group_by_exp: "p", "p.date | date: '%Y'" -%}
+{%- for year in by_year -%}
+<h2 class="year">{{ year.name }}</h2>
+<ul class="list">
+  {%- for p in year.items -%}
+  <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a><span>{% include date.html date=p.date %}</span></li>
+  {%- endfor -%}
+</ul>
+{%- else -%}
+<p class="empty">Ancora nessun articolo.</p>
+{%- endfor -%}

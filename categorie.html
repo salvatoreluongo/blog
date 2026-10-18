@@ -1,0 +1,20 @@
+---
+layout: default
+title: Categorie
+permalink: /categorie/
+---
+<h1 class="page-title">Categorie</h1>
+{%- assign cats = site.categories | sort -%}
+<div class="pills cat-index">
+  {%- for cat in cats -%}<a class="pill" href="#{{ cat[0] | slugify }}">{{ cat[0] }} · {{ cat[1].size }}</a>{%- endfor -%}
+</div>
+{%- for cat in cats -%}
+<section class="cat-section" id="{{ cat[0] | slugify }}">
+  <h2 class="year">{{ cat[0] }}</h2>
+  <div class="cards">
+    {%- for post in cat[1] -%}{% include card.html post=post %}{%- endfor -%}
+  </div>
+</section>
+{%- else -%}
+<p class="empty">Le categorie compariranno con il primo articolo.</p>
+{%- endfor -%}

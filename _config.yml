@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────
+#  Impostazioni del blog (le uniche da toccare sono qui sopra)
+# ─────────────────────────────────────────────────────────────
+title: "Salvatore Luongo"
+tagline: "Cybersecurity, tecnologia e prove sul campo"
+description: "Articoli di cybersecurity e tecnologia: provo in prima persona strumenti e tecniche e racconto com'è andata."
+lang: it-IT
+timezone: Europe/Rome
+
+author:
+  name: "Salvatore Luongo"
+  # Avatar: per ora quello del profilo GitHub. Per usare il tuo memoji carica
+  # l'immagine in assets/img/ e scrivi qui: /assets/img/avatar.png
+  avatar: "https://github.com/salvatoreluongo.png"
+  url: "https://salvatoreluongo.it"
+
+# Link mostrati nel menu (lascia vuoto per nasconderli)
+social:
+  linkedin: ""        # es. https://www.linkedin.com/in/tuo-profilo
+  github: "https://github.com/salvatoreluongo"
+  sito: "https://salvatoreluongo.it"
+
+# Indirizzo del blog su GitHub Pages: https://salvatoreluongo.github.io/blog
+url: "https://salvatoreluongo.github.io"
+baseurl: "/blog"
+
+# Quanti articoli in home
+home_posts: 12
+
+# ─────────────────────────────────────────────────────────────
+#  Impostazioni tecniche (non serve modificarle)
+# ─────────────────────────────────────────────────────────────
+permalink: /:title/
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+feed:
+  path: feed.xml
+defaults:
+  - scope: { path: "", type: posts }
+    values: { layout: post }
+exclude:
+  - README.md
+  - GUIDA.md
+  - modello-articolo.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
