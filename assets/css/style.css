@@ -77,7 +77,10 @@ body:not(.is-post) .progress { display: none; }   /* la barra di lettura solo ne
 .menu-label { margin: 34px 0 10px; font-size: 13px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
 .menu-cats, .menu-links { list-style: none; margin: 0; padding: 0; }
 .menu-cats a, .menu-links a { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; font-size: 21px; font-weight: 600; color: var(--ink); }
-.menu-cats a span { background: var(--pill); border-radius: 999px; padding: 3px 12px; font-size: 14px; color: var(--muted); }
+.menu-cats a span { background: var(--pill); border-radius: 999px; padding: 3px 12px; font-size: 14px; color: var(--muted); transition: background .15s, color .15s; }
+.menu-cats a { transition: color .15s; }
+.menu-cats a:hover { color: var(--accent); }
+.menu-cats a:hover span { background: var(--accent); color: #fff; }
 body.menu-open { overflow: hidden; }
 
 /* ── Home e liste ─────────────────────────────────── */
@@ -112,6 +115,7 @@ body.menu-open { overflow: hidden; }
 .list span { color: var(--muted); white-space: nowrap; font-size: 15px; }
 .cat-index { margin-bottom: 8px; }
 .cat-index .pill.active { background: var(--accent); color: #fff; }
+.cat-index .pill:hover { background: var(--accent); color: #fff; }
 .cat-section { scroll-margin-top: 100px; }
 .cat-section .cards { padding-top: 10px; gap: 48px; }
 
@@ -167,9 +171,11 @@ body.menu-open { overflow: hidden; }
 .contact { background: var(--source-bg); border-radius: 20px; padding: 22px 24px; margin: 30px 0 0; }
 .contact p { margin: 0; color: var(--body); font-size: 16px; line-height: 1.6; }
 .contact-title { font-weight: 800 !important; color: var(--ink) !important; font-size: 19px !important; margin-bottom: 4px !important; }
-.contact-btn { display: inline-block; margin-top: 14px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; font-size: 16px; padding: 11px 22px; border-radius: 999px; transition: transform .15s, filter .15s; }
-.contact-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
-.contact-btn:disabled { opacity: .6; cursor: default; transform: none; }
+.contact-btn { display: inline-flex; align-items: center; gap: 9px; margin-top: 14px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; font-size: 16px; line-height: 1; padding: 14px 28px; border: 0; border-radius: 999px; cursor: pointer; box-shadow: 0 6px 18px rgba(232,105,63,.35); transition: transform .15s ease, box-shadow .2s ease, filter .2s ease; }
+.contact-btn svg { width: 18px; height: 18px; }
+.contact-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(232,105,63,.46); filter: brightness(1.04); }
+.contact-btn:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(232,105,63,.34); }
+.contact-btn:disabled { opacity: .55; cursor: default; transform: none; box-shadow: none; filter: none; }
 /* Modulo di contatto */
 .cform { margin-top: 16px; display: grid; gap: 12px; }
 .cform-in { width: 100%; font: 400 16px var(--font); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
