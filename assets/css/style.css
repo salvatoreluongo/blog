@@ -81,8 +81,8 @@ body:not(.is-post) .progress { display: none; }   /* la barra di lettura solo ne
   .menu-btn { display: flex; }
 }
 
-/* ── Home piu ampia (solo la home) ────────────────── */
-body.is-home .container { max-width: 1120px; }
+/* ── Pagine elenco piu ampie (home, categorie, archivio) ── */
+body:not(.is-post) .container { max-width: 1120px; }
 .avatar { width: 56px; height: 56px; border-radius: 50%; background: #111; object-fit: cover; display: block; }
 .brand { font-weight: 700; font-size: 18px; color: var(--ink); flex: 1; opacity: 0; transition: opacity .2s; }
 @media (min-width: 700px) { .brand { opacity: 1; } }
@@ -333,13 +333,21 @@ textarea.cform-in { resize: vertical; min-height: 96px; }
 .hcard-featured .hcard-excerpt { font-size: 15px; -webkit-line-clamp: 4; }
 .hcard-featured .hcard-foot { margin-top: auto; }
 
-/* Chiusura editoriale */
-.home-outro { margin: 48px 0 40px; background: var(--accent-soft); padding: 30px 36px; border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent); border-radius: 22px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+/* Banner "segnala una curiosità" (con form che si apre) */
+.home-outro { margin: 48px 0 40px; background: var(--accent-soft); padding: 30px 36px; border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent); border-radius: 22px; }
+.outro-head { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
 .home-outro .section-kicker { margin-bottom: 4px; }
 .home-outro h2 { margin: 6px 0; color: var(--ink); letter-spacing: -.035em; font-size: clamp(20px,2.2vw,28px); line-height: 1.2; }
 .home-outro p { color: var(--muted); margin: 0; font-size: 13.5px; line-height: 1.6; max-width: 640px; }
-.outro-link { display: grid; place-items: center; flex: 0 0 auto; width: 54px; height: 54px; border-radius: 50%; color: #fff; background: var(--accent); text-decoration: none; font-size: 23px; transition: transform .2s; }
+.outro-link { display: grid; place-items: center; flex: 0 0 auto; width: 54px; height: 54px; border: 0; border-radius: 50%; color: #fff; background: var(--accent); cursor: pointer; font-size: 23px; line-height: 1; transition: transform .25s; }
 .outro-link:hover { transform: rotate(45deg); }
+.outro-link.open { transform: rotate(90deg); }
+.outro-form { margin-top: 22px; border-top: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); padding-top: 20px; }
+.outro-form[hidden] { display: none; }
+.outro-form .cform { margin-top: 0; max-width: 560px; }
+/* Categorie in stile home */
+.cat-section .cat-grid { margin-top: 22px; }
+.cat-section { margin-top: 10px; }
 
 @media (max-width: 880px) {
   .hero { grid-template-columns: 1fr; padding: 40px; gap: 30px; }
@@ -354,6 +362,7 @@ textarea.cform-in { resize: vertical; min-height: 96px; }
   .section-aside { display: none; }
   .home-featured, .home-latest { margin-top: 32px; }
   .hcard-featured .hcard-body, .hcard-body { padding: 20px; }
-  .home-outro { padding: 24px; flex-direction: row; }
+  .home-outro { padding: 24px; }
+  .outro-head { gap: 16px; }
   .outro-link { width: 46px; height: 46px; }
 }

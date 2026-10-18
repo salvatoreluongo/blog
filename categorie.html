@@ -10,10 +10,16 @@ permalink: /categorie/
 </div>
 {%- for cat in cats -%}
 <section class="cat-section" id="{{ cat[0] | slugify }}" data-cat="{{ cat[0] | slugify }}">
-  <h2 class="year">{{ cat[0] }}</h2>
-  <div class="cards">
-    {%- for post in cat[1] -%}{% include card.html post=post %}{%- endfor -%}
+  {%- assign posts = cat[1] -%}
+  {%- assign top = posts | first -%}
+  {% include hcard.html post=top featured=true more="Leggi l'articolo ↗" %}
+  {%- if posts.size > 1 -%}
+  <div class="hcards cat-grid">
+    {%- for post in posts offset: 1 -%}
+      {% include hcard.html post=post %}
+    {%- endfor -%}
   </div>
+  {%- endif -%}
 </section>
 {%- else -%}
 <p class="empty">Le categorie compariranno con il primo articolo.</p>

@@ -35,71 +35,58 @@ title: Home
 <section class="home-featured">
   <div class="section-topline">
     <div>
-      <span class="section-kicker">01 / IN EVIDENZA</span>
+      <span class="section-kicker">IN EVIDENZA</span>
       <h2>Da leggere</h2>
     </div>
     <span class="section-aside">L'articolo più recente</span>
   </div>
-  <article class="hcard hcard-featured">
-    <a class="hcard-cover" href="{{ featured.url | relative_url }}" aria-label="{{ featured.title | escape }}">
-      {%- if featured.image -%}<img src="{{ featured.image | relative_url }}" alt="" loading="lazy">{%- else -%}<span class="hcard-ph">&gt;_</span>{%- endif -%}
-      <span class="cover-corner">↗</span>
-    </a>
-    <div class="hcard-body">
-      <div class="hcard-overline">
-        <div class="pills">{%- for c in featured.categories -%}<a class="pill" href="{{ '/categorie/' | relative_url }}#{{ c | slugify }}">{{ c }}</a>{%- endfor -%}</div>
-        <time class="hcard-date">{% include date.html date=featured.date %}</time>
-      </div>
-      <h3 class="hcard-title"><a href="{{ featured.url | relative_url }}">{{ featured.title }}</a></h3>
-      <p class="hcard-excerpt">{{ featured.description }}</p>
-      <div class="hcard-foot">
-        <span class="byline"><img class="mini-avatar" src="{{ site.author.avatar | relative_url }}" alt="" width="29" height="29"><strong>{{ site.author.name }}</strong></span>
-        <a class="more" href="{{ featured.url | relative_url }}">Leggi l'articolo ↗</a>
-      </div>
-    </div>
-  </article>
+  {% include hcard.html post=featured featured=true more="Leggi l'articolo ↗" %}
 </section>
 {%- endif -%}
 
 <section class="home-latest" id="ultimi-articoli">
   <div class="section-topline">
     <div>
-      <span class="section-kicker">02 / IL BLOG</span>
+      <span class="section-kicker">IL BLOG</span>
       <h2>Ultimi articoli</h2>
     </div>
     <a class="section-all" href="{{ '/archivio/' | relative_url }}">Vai all'archivio ↗</a>
   </div>
   <div class="hcards">
     {%- for post in site.posts offset: 1 limit: 6 -%}
-    <article class="hcard">
-      <a class="hcard-cover" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}">
-        {%- if post.image -%}<img src="{{ post.image | relative_url }}" alt="" loading="lazy">{%- else -%}<span class="hcard-ph">&gt;_</span>{%- endif -%}
-        <span class="cover-corner">↗</span>
-      </a>
-      <div class="hcard-body">
-        <div class="hcard-overline">
-          <div class="pills">{%- for c in post.categories -%}<a class="pill" href="{{ '/categorie/' | relative_url }}#{{ c | slugify }}">{{ c }}</a>{%- endfor -%}</div>
-          <time class="hcard-date">{% include date.html date=post.date %}</time>
-        </div>
-        <h3 class="hcard-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-        <p class="hcard-excerpt">{{ post.description }}</p>
-        <div class="hcard-foot">
-          <span class="byline"><img class="mini-avatar" src="{{ site.author.avatar | relative_url }}" alt="" width="29" height="29"><strong>{{ site.author.name }}</strong></span>
-          <a class="more" href="{{ post.url | relative_url }}">Leggi ↗</a>
-        </div>
-      </div>
-    </article>
+      {% include hcard.html post=post %}
     {%- else -%}
     <p class="empty">Il primo articolo è in arrivo.</p>
     {%- endfor -%}
   </div>
 </section>
 
-<section class="home-outro">
-  <div>
-    <span class="section-kicker">STAY CURIOUS</span>
-    <h2>La curiosità è il miglior punto di partenza.</h2>
-    <p>Esperimenti, guide e strumenti spiegati in modo diretto, senza complicazioni inutili.</p>
+<section class="home-outro" id="segnala">
+  <div class="outro-head">
+    <div class="outro-text">
+      <span class="section-kicker">HAI UNA CURIOSITÀ?</span>
+      <h2>Raccontamela.</h2>
+      <p>Una curiosità, una segnalazione o un'idea per un articolo? Scrivimi: ci do un'occhiata.</p>
+    </div>
+    <button class="outro-link" id="outro-toggle" type="button" aria-expanded="false" aria-controls="outro-form" aria-label="Apri il modulo per scrivermi">↗</button>
   </div>
-  <a class="outro-link" href="{{ '/archivio/' | relative_url }}" aria-label="Vai all'archivio">↗</a>
+  {%- if site.web3forms_key and site.web3forms_key != "" -%}
+  <div class="outro-form" id="outro-form" hidden>
+    <form class="cform" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="{{ site.web3forms_key }}">
+      <input type="hidden" name="subject" value="Nuova curiosità dal blog">
+      <input type="hidden" name="from_name" value="Blog · {{ site.author.name }}">
+      <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input class="cform-in" type="text" name="name" placeholder="Il tuo nome" required>
+      <input class="cform-in" type="email" name="email" placeholder="La tua email" required>
+      <textarea class="cform-in" name="message" rows="3" placeholder="La tua curiosità o segnalazione" required></textarea>
+      {%- if site.hcaptcha_sitekey and site.hcaptcha_sitekey != "" -%}
+      <div class="h-captcha" data-sitekey="{{ site.hcaptcha_sitekey }}"></div>
+      {%- endif -%}
+      <button type="submit" class="contact-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Invia</button>
+      <p class="cform-msg" aria-live="polite"></p>
+    </form>
+  </div>
+  {%- endif -%}
 </section>
+{%- if site.web3forms_key != "" and site.hcaptcha_sitekey != "" -%}<script src="https://js.hcaptcha.com/1/api.js" async defer></script>{%- endif -%}

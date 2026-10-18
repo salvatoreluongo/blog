@@ -157,6 +157,19 @@
     }));
   }
 
+  // Banner "segnala una curiosità": apri/chiudi il modulo
+  const outroToggle = document.getElementById("outro-toggle");
+  const outroForm = document.getElementById("outro-form");
+  if (outroToggle && outroForm) {
+    outroToggle.addEventListener("click", () => {
+      const open = outroForm.hidden;
+      outroForm.hidden = !open;
+      outroToggle.setAttribute("aria-expanded", String(open));
+      outroToggle.classList.toggle("open", open);
+      if (open) { const f = outroForm.querySelector("input, textarea"); if (f) f.focus(); }
+    });
+  }
+
   // Modulo di contatto (Web3Forms): invio senza ricaricare la pagina
   document.querySelectorAll(".cform").forEach((form) => {
     form.addEventListener("submit", async (e) => {
