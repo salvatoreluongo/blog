@@ -2,19 +2,104 @@
 layout: default
 title: Home
 ---
-<section class="intro">
-  <h1>{{ site.tagline }}</h1>
-  <p>{{ site.description }}</p>
+{%- assign featured = site.posts.first -%}
+
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="live-dot"></span> APPUNTI DA UN LABORATORIO DIGITALE</span>
+    <h1>{{ site.tagline }}</h1>
+    <p>{{ site.description }}</p>
+    <div class="hero-actions">
+      <a class="action-primary" href="#ultimi-articoli">Esplora gli articoli <span>↗</span></a>
+      <a class="action-text" href="{{ '/categorie/' | relative_url }}">Sfoglia le categorie <span>→</span></a>
+    </div>
+  </div>
+  <div class="hero-terminal" aria-hidden="true">
+    <div class="terminal-bar">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span>FIELD_NOTES / TERMINAL</span>
+      <span class="terminal-square">⌘</span>
+    </div>
+    <div class="terminal-content">
+      <p class="terminal-command"><b>~</b> cat note.txt<span class="terminal-cursor">_</span></p>
+      <p><span class="terminal-green">[01]</span> Windows &amp; sistemi</p>
+      <p><span class="terminal-green">[02]</span> Sicurezza &amp; forensics</p>
+      <p><span class="terminal-green">[03]</span> Soluzioni sul campo</p>
+      <div class="terminal-rule"></div>
+      <span class="terminal-output">APPROCCIO: SPERIMENTARE → CAPIRE → RACCONTARE</span>
+    </div>
+  </div>
 </section>
 
-<section class="cards">
-  {%- for post in site.posts limit: site.home_posts -%}
-    {% include card.html post=post %}
-  {%- else -%}
-    <p class="empty">Il primo articolo è in arrivo.</p>
-  {%- endfor -%}
+{%- if featured -%}
+<section class="home-featured">
+  <div class="section-topline">
+    <div>
+      <span class="section-kicker">01 / IN EVIDENZA</span>
+      <h2>Da leggere</h2>
+    </div>
+    <span class="section-aside">L'articolo più recente</span>
+  </div>
+  <article class="hcard hcard-featured">
+    <a class="hcard-cover" href="{{ featured.url | relative_url }}" aria-label="{{ featured.title | escape }}">
+      {%- if featured.image -%}<img src="{{ featured.image | relative_url }}" alt="" loading="lazy">{%- else -%}<span class="hcard-ph">&gt;_</span>{%- endif -%}
+      <span class="cover-corner">↗</span>
+    </a>
+    <div class="hcard-body">
+      <div class="hcard-overline">
+        <div class="pills">{%- for c in featured.categories -%}<a class="pill" href="{{ '/categorie/' | relative_url }}#{{ c | slugify }}">{{ c }}</a>{%- endfor -%}</div>
+        <time class="hcard-date">{% include date.html date=featured.date %}</time>
+      </div>
+      <h3 class="hcard-title"><a href="{{ featured.url | relative_url }}">{{ featured.title }}</a></h3>
+      <p class="hcard-excerpt">{{ featured.description }}</p>
+      <div class="hcard-foot">
+        <span class="byline"><img class="mini-avatar" src="{{ site.author.avatar | relative_url }}" alt="" width="29" height="29"><strong>{{ site.author.name }}</strong></span>
+        <a class="more" href="{{ featured.url | relative_url }}">Leggi l'articolo ↗</a>
+      </div>
+    </div>
+  </article>
 </section>
-
-{%- if site.posts.size > site.home_posts -%}
-<p class="all-link"><a href="{{ '/archivio/' | relative_url }}">Tutti gli articoli →</a></p>
 {%- endif -%}
+
+<section class="home-latest" id="ultimi-articoli">
+  <div class="section-topline">
+    <div>
+      <span class="section-kicker">02 / IL BLOG</span>
+      <h2>Ultimi articoli</h2>
+    </div>
+    <a class="section-all" href="{{ '/archivio/' | relative_url }}">Vai all'archivio ↗</a>
+  </div>
+  <div class="hcards">
+    {%- for post in site.posts offset: 1 limit: 6 -%}
+    <article class="hcard">
+      <a class="hcard-cover" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}">
+        {%- if post.image -%}<img src="{{ post.image | relative_url }}" alt="" loading="lazy">{%- else -%}<span class="hcard-ph">&gt;_</span>{%- endif -%}
+        <span class="cover-corner">↗</span>
+      </a>
+      <div class="hcard-body">
+        <div class="hcard-overline">
+          <div class="pills">{%- for c in post.categories -%}<a class="pill" href="{{ '/categorie/' | relative_url }}#{{ c | slugify }}">{{ c }}</a>{%- endfor -%}</div>
+          <time class="hcard-date">{% include date.html date=post.date %}</time>
+        </div>
+        <h3 class="hcard-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+        <p class="hcard-excerpt">{{ post.description }}</p>
+        <div class="hcard-foot">
+          <span class="byline"><img class="mini-avatar" src="{{ site.author.avatar | relative_url }}" alt="" width="29" height="29"><strong>{{ site.author.name }}</strong></span>
+          <a class="more" href="{{ post.url | relative_url }}">Leggi ↗</a>
+        </div>
+      </div>
+    </article>
+    {%- else -%}
+    <p class="empty">Il primo articolo è in arrivo.</p>
+    {%- endfor -%}
+  </div>
+</section>
+
+<section class="home-outro">
+  <div>
+    <span class="section-kicker">STAY CURIOUS</span>
+    <h2>La curiosità è il miglior punto di partenza.</h2>
+    <p>Esperimenti, guide e strumenti spiegati in modo diretto, senza complicazioni inutili.</p>
+  </div>
+  <a class="outro-link" href="{{ '/archivio/' | relative_url }}" aria-label="Vai all'archivio">↗</a>
+</section>

@@ -5,6 +5,11 @@
       <img class="avatar" src="{{ site.author.avatar | relative_url }}" alt="{{ site.author.name }}" width="56" height="56">
     </a>
     <span class="brand">{{ site.title }}</span>
+    <nav class="header-nav" aria-label="Navigazione principale">
+      <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>Home</a>
+      <a href="{{ '/archivio/' | relative_url }}"{% if page.url contains '/archivio' %} aria-current="page"{% endif %}>Articoli</a>
+      <a href="{{ '/categorie/' | relative_url }}"{% if page.url contains '/categorie' %} aria-current="page"{% endif %}>Categorie</a>
+    </nav>
     <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambia tema chiaro/scuro" title="Tema chiaro/scuro">
       <svg class="sun-moon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
         <mask id="moon-mask">
