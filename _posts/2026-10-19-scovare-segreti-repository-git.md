@@ -1,10 +1,10 @@
 ---
-title: "Scova i dati sensibili nei tuoi repository Git prima che lo faccia qualcun altro"
+title: "Scova i dati sensibili nei tuoi repository Git con BetterLeaks"
 date: 2026-10-19 11:00:00 +0200
 categories: [Sicurezza]
-image: /assets/img/git-secrets/cover.png
-description: "Password e chiavi API finite per sbaglio in un commit restano nella storia del repository per sempre. Con Gitleaks e TruffleHog le trovi prima tu — ecco come."
-fonte: https://www.hackerjournal.it/
+image: /assets/img/betterleaks/cover.png
+description: "Password e chiavi API finite per sbaglio in un commit restano nella storia del repository per sempre. Con BetterLeaks le trovi prima tu — ecco come, passo per passo."
+fonte: https://hackerjournal.it/15684/scova-i-dati-sensibili-nei-repository-git/
 fonte_titolo: "Scova i dati sensibili nei repository GIT"
 fonte_nome: "Hacker Journal"
 published: false
@@ -13,118 +13,87 @@ published: false
 <!--
   BOZZA — non ancora pubblicata.
   Da fare prima di pubblicare:
-  1) provare i comandi su Kali e aggiornarli se serve: Gitleaks e TruffleHog cambiano
-     ogni tanto la sintassi dei sottocomandi — verifica con `gitleaks --help` e `trufflehog --help`;
-  2) creare un repo di prova con qualche finta chiave (es. AKIA..., una password), così gli screenshot
-     mostrano dei "ritrovamenti" SENZA usare segreti veri;
-  3) aggiungere le TUE schermate in  assets/img/git-secrets/  con questi nomi:
-     cover.png, 01-gitleaks-scan.png, 02-gitleaks-report.png,
-     03-trufflehog-scan.png, 04-trufflehog-verified.png, 05-precommit.png
-  4) quando è pronto, cambiare  published: false  in  published: true.
+  1) provare i comandi su Kali: BetterLeaks richiede una versione recente di Go;
+     al primo `make build` Go scarica da solo la toolchain giusta (serve internet).
+     Conferma la sintassi con `./betterleaks --help`.
+  2) usa il repo di prova "nova-shop-api" (quello con le chiavi FINTE) per gli screenshot;
+  3) metti le TUE schermate in  assets/img/betterleaks/  con questi nomi:
+     cover.png, 01-build.png, 02-scan.png, 03-report.png, 04-github.png
+  4) quando è pronto, cambia  published: false  in  published: true.
 -->
 
-Capita a tutti, prima o poi: incolli una **chiave API** o una **password** dentro un file per fare una prova veloce, fai il commit, e te ne dimentichi. Magari il giorno dopo la togli — ma è già tardi. In Git, quello che cancelli **resta nella storia** del repository: basta scorrere i vecchi commit per ritrovarlo intatto.
+Capita a tutti, prima o poi: incolli una **chiave API** o una **password** dentro un file per fare una prova veloce, fai il commit, e te ne dimentichi. Magari il giorno dopo la togli — ma è già tardi. In Git, quello che cancelli **resta nella storia** del repository: basta scorrere i vecchi commit per ritrovarlo intatto. Si sono visti casi di chiavi d'accesso a un server rimaste pubbliche su GitHub per **anni**, dentro il codice di un fornitore, senza che nessuno se ne accorgesse.
 
-E non devi nemmeno sbagliare pubblicando su GitHub: là fuori ci sono **bot** che scandagliano i repository pubblici 24 ore su 24 proprio in cerca di segreti dimenticati. Una chiave AWS esposta per pochi minuti può bastare.
+E non devi nemmeno pubblicare per sbaglio: là fuori ci sono **bot** che scandagliano i repository pubblici 24 ore su 24 proprio in cerca di segreti dimenticati. Una chiave esposta per pochi minuti può bastare.
 
-La buona notizia è che gli stessi strumenti che usano loro per trovarli, puoi usarli **tu, prima**, per fare pulizia. In questo articolo provo i due più noti: **Gitleaks** e **TruffleHog**.
+La buona notizia è che puoi fare la stessa cosa **tu, prima**: passare al setaccio il tuo codice e stanare i segreti prima che finiscano online. In questo articolo uso **BetterLeaks**, uno scanner veloce che cerca password, token e chiavi di accesso dentro repository e cartelle.
 
 > **Uso responsabile.** Scansiona i **tuoi** repository, o quelli per cui hai un'autorizzazione esplicita. Trovare segreti in progetti altrui e usarli è un reato. Qui l'obiettivo è difensivo: scoprire cosa ci siamo lasciati dietro e correre ai ripari.
 
-## Gitleaks o TruffleHog?
+## Cos'è BetterLeaks
 
-I due strumenti si somigliano ma hanno due anime diverse:
-
-| | Gitleaks | TruffleHog |
-|---|---|---|
-| Come cerca | Regole ed entropia (schemi di chiavi note) | Regole + oltre 800 "detector" per servizi noti |
-| Verifica i segreti | No | **Sì**: controlla se la chiave è ancora valida |
-| Punto di forza | Veloce, perfetto in CI e nei pre-commit | Approfondito, distingue i segreti *vivi* |
-| Ideale per | Bloccare i leak prima del commit | Capire quanto sei davvero esposto |
-
-In pratica si usano **insieme**: Gitleaks come rete di sicurezza automatica, TruffleHog per l'analisi vera.
+**BetterLeaks** è uno strumento a riga di comando, scritto in Go, che analizza il codice alla ricerca di **credenziali** lasciate in chiaro: chiavi AWS, token di GitHub o Slack, chiavi Stripe, chiavi private… Non guarda solo i file attuali: sa leggere l'**intera cronologia** di un repository Git, e può puntare direttamente a un repository pubblico su GitHub o GitLab senza nemmeno clonarlo. I risultati si esportano in JSON, CSV o Markdown.
 
 ## Installazione su Kali
 
-Entrambi sono nei repository di Kali:
+BetterLeaks si compila dai sorgenti. Servono `git`, `go` e `make`:
 
 ```
 sudo apt update
-sudo apt install -y gitleaks trufflehog
+sudo apt install -y git golang-go make
+git clone https://github.com/betterleaks/betterleaks
+cd betterleaks
+make build
 ```
 
-Verifica che rispondano:
+Nota: BetterLeaks richiede una versione di Go abbastanza recente; al primo `make build` Go scarica da solo la toolchain corretta, quindi serve la connessione a internet. A fine compilazione trovi l'eseguibile `betterleaks` nella cartella. Verifica che risponda:
 
 ```
-gitleaks version
-trufflehog --version
+./betterleaks version
 ```
 
-## Gitleaks: una scansione della storia del repo
+## Scansionare la cronologia di un repository
 
-Spostati nella cartella di un repository Git e lancia la scansione. Gitleaks analizza **tutta la cronologia**, non solo i file attuali:
-
-```
-cd /percorso/del/tuo/repo
-gitleaks git . --verbose
-```
-
-*(Su versioni di Gitleaks precedenti alla 8.19 il comando era `gitleaks detect --source .`.)*
-
-Per ogni segreto trovato ti mostra il **tipo** (chiave AWS, token, password…), il **file**, la **riga** e il **commit** in cui è comparso.
-
-![Gitleaks segnala i segreti trovati nella storia del repository](/blog/assets/img/git-secrets/01-gitleaks-scan.png)
-*Gitleaks segnala i segreti trovati nella storia del repository*
-
-Per tenere un referto da consultare con calma, esportalo in un file:
+Spostati nella cartella di un repository e lancia la scansione della **storia completa**:
 
 ```
-gitleaks git . --report-path gitleaks-report.json
+./betterleaks git /percorso/del/tuo/repo
 ```
 
-Un dettaglio importante: Gitleaks scava in **tutti i commit**, quindi trova i segreti anche nei file che hai *cancellato* in seguito — perché restano comunque nella cronologia. (Per controllare solo i file così come sono adesso, invece di tutta la storia, c'è `gitleaks dir .`)
+Per ogni segreto trovato, BetterLeaks ti mostra il **tipo** (chiave AWS, token GitHub, chiave privata…), il **file**, la **riga** e il **commit** in cui è comparso. Aggiungi `-v` per vedere più dettagli a schermo.
 
-![Il report JSON prodotto da Gitleaks](/blog/assets/img/git-secrets/02-gitleaks-report.png)
-*Il report JSON prodotto da Gitleaks*
+![BetterLeaks segnala i segreti trovati nella storia del repository](/blog/assets/img/betterleaks/02-scan.png)
+*BetterLeaks segnala i segreti trovati nella storia del repository*
 
-## TruffleHog: trovare i segreti ancora "vivi"
-
-TruffleHog fa un passo in più: non solo trova le potenziali chiavi, ma **prova a verificarle**, dicendoti quali sono ancora valide (quindi davvero pericolose). Si può puntare su un repository locale:
+Un punto importante: BetterLeaks scava in **tutti i commit**, quindi trova i segreti anche nei file che hai *cancellato* in seguito — perché restano comunque nella cronologia. Se invece vuoi controllare solo i file così come sono adesso, usa la modalità cartella:
 
 ```
-trufflehog git file://. 
+./betterleaks dir /percorso -v
 ```
 
-![TruffleHog analizza il repository alla ricerca di credenziali](/blog/assets/img/git-secrets/03-trufflehog-scan.png)
-*TruffleHog analizza il repository alla ricerca di credenziali*
+## Salvare un referto
 
-Oppure direttamente su un repository remoto su GitHub, senza nemmeno clonarlo:
-
-```
-trufflehog github --repo=https://github.com/UTENTE/REPO
-```
-
-Il flag più utile è `--only-verified`: mostra **solo** i segreti che TruffleHog è riuscito a confermare come ancora attivi. Sono quelli da revocare per primi.
+In un contesto reale conviene conservare i risultati. Con `-r` esporti il report in un file (JSON, CSV o Markdown a seconda dell'estensione):
 
 ```
-trufflehog git file://. --only-verified
+./betterleaks git . -r report.json
 ```
 
-![Con --only-verified restano solo i segreti confermati come ancora validi](/blog/assets/img/git-secrets/04-trufflehog-verified.png)
-*Con `--only-verified` restano solo i segreti confermati come ancora validi*
+![Il report prodotto da BetterLeaks](/blog/assets/img/betterleaks/03-report.png)
+*Il report prodotto da BetterLeaks*
 
-## Prevenire: il controllo prima del commit
+## Scansionare un repository GitHub al volo
 
-Trovare i segreti è metà del lavoro; l'altra metà è **non lasciarceli più**. Gitleaks si aggancia come **hook pre-commit**: a ogni commit controlla le modifiche e, se trova un segreto, **blocca** l'operazione prima che finisca nella storia.
+La parte più comoda: puoi puntare BetterLeaks **direttamente a un repository pubblico**, senza clonarlo, passando l'URL:
 
 ```
-gitleaks git --pre-commit --staged --verbose
+./betterleaks github https://github.com/UTENTE/REPO
 ```
 
-Integrandolo nei `pre-commit` del progetto (o nella pipeline CI), la rete di sicurezza diventa automatica per tutto il team.
+È il modo più rapido per controllare un progetto — il tuo, o uno di cui hai la responsabilità — prima che lo faccia qualcun altro.
 
-![L'hook pre-commit blocca il commit quando trova un segreto](/blog/assets/img/git-secrets/05-precommit.png)
-*L'hook pre-commit blocca il commit quando trova un segreto*
+![La scansione di un repository GitHub direttamente dall'URL](/blog/assets/img/betterleaks/04-github.png)
+*La scansione di un repository GitHub direttamente dall'URL*
 
 ## Hai trovato un segreto: e adesso?
 
@@ -136,4 +105,4 @@ Questa è la parte che in tanti sbagliano. Se scopri una chiave esposta, **cance
 
 ## In sintesi
 
-Un segreto in un repository è come una chiave di casa lasciata sotto lo zerbino: finché non te ne accorgi, pensi che nessuno la noti. Gitleaks e TruffleHog ti danno il punto di vista di chi quella chiave la cerca — e, usati prima di pubblicare, trasformano un disastro potenziale in un controllo di routine. La regola d'oro resta una sola: **i segreti non si cancellano, si revocano**.
+Un segreto in un repository è come una chiave di casa lasciata sotto lo zerbino: finché non te ne accorgi, pensi che nessuno la noti. BetterLeaks ti dà il punto di vista di chi quella chiave la cerca — e, usato prima di pubblicare, trasforma un disastro potenziale in un controllo di routine. Se vuoi confrontarlo con altri strumenti dello stesso tipo, i più noti sono **Gitleaks** e **TruffleHog**: la logica è la stessa. La regola d'oro, comunque, resta una sola: **i segreti non si cancellano, si revocano**.
