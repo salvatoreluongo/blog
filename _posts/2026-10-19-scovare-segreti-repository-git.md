@@ -66,8 +66,10 @@ Spostati nella cartella di un repository Git e lancia la scansione. Gitleaks ana
 
 ```
 cd /percorso/del/tuo/repo
-gitleaks detect --source . --verbose
+gitleaks git . --verbose
 ```
+
+*(Su versioni di Gitleaks precedenti alla 8.19 il comando era `gitleaks detect --source .`.)*
 
 Per ogni segreto trovato ti mostra il **tipo** (chiave AWS, token, password…), il **file**, la **riga** e il **commit** in cui è comparso.
 
@@ -77,8 +79,10 @@ Per ogni segreto trovato ti mostra il **tipo** (chiave AWS, token, password…),
 Per tenere un referto da consultare con calma, esportalo in un file:
 
 ```
-gitleaks detect --source . --report-path gitleaks-report.json
+gitleaks git . --report-path gitleaks-report.json
 ```
+
+Un dettaglio importante: Gitleaks scava in **tutti i commit**, quindi trova i segreti anche nei file che hai *cancellato* in seguito — perché restano comunque nella cronologia. (Per controllare solo i file così come sono adesso, invece di tutta la storia, c'è `gitleaks dir .`)
 
 ![Il report JSON prodotto da Gitleaks](/blog/assets/img/git-secrets/02-gitleaks-report.png)
 *Il report JSON prodotto da Gitleaks*
@@ -114,7 +118,7 @@ trufflehog git file://. --only-verified
 Trovare i segreti è metà del lavoro; l'altra metà è **non lasciarceli più**. Gitleaks si aggancia come **hook pre-commit**: a ogni commit controlla le modifiche e, se trova un segreto, **blocca** l'operazione prima che finisca nella storia.
 
 ```
-gitleaks protect --staged --verbose
+gitleaks git --pre-commit --staged --verbose
 ```
 
 Integrandolo nei `pre-commit` del progetto (o nella pipeline CI), la rete di sicurezza diventa automatica per tutto il team.
