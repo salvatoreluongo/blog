@@ -22,7 +22,7 @@ published: false
   4) quando è pronto, cambia  published: false  in  published: true.
 -->
 
-Qualche sera fa ho ripescato una **vecchia versione del mio blog** — roba stile 2003, tabelle, contatore delle visite e la home piena di notizie dell'epoca. Curiosando nel codice, ci ho trovato di tutto: la chiave delle Google Maps in chiaro dentro lo `<script>`, un token per il deploy su GitHub e la chiave per l'invio delle email. Tutto lì, in bella vista, dentro una pagina HTML. È il promemoria perfetto di un problema che riguarda chiunque scriva codice.
+Qualche sera fa ho ripescato una **vecchia versione del mio blog** — roba stile 2003, tabelle, contatore delle visite e la home piena di notizie dell'epoca. Curiosando nel codice, ci ho trovato di tutto: la chiave delle Google Maps in chiaro dentro lo `<script>` e un token per il deploy su GitHub, lì in bella vista dentro una pagina HTML. È il promemoria perfetto di un problema che riguarda chiunque scriva codice.
 
 Capita a tutti, prima o poi: incolli una **chiave API** o una **password** dentro un file per fare una prova veloce, fai il commit, e te ne dimentichi. Magari il giorno dopo la togli — ma è già tardi. In Git, quello che cancelli **resta nella storia** del repository: basta scorrere i vecchi commit per ritrovarlo intatto. Si sono visti casi di chiavi d'accesso a un server rimaste pubbliche su GitHub per **anni**, dentro il codice di un fornitore, senza che nessuno se ne accorgesse.
 
@@ -75,10 +75,10 @@ Un punto importante: BetterLeaks scava in **tutti i commit**, quindi trova i seg
 
 ## Salvare un referto
 
-In un contesto reale conviene conservare i risultati. Con `-r` esporti il report in un file (JSON, CSV o Markdown a seconda dell'estensione):
+In un contesto reale conviene conservare i risultati. Con `-o` (output) esporti il report in un file JSON:
 
 ```
-./betterleaks git . -r report.json
+./betterleaks git . -o report.json
 ```
 
 ![Il report prodotto da BetterLeaks](/blog/assets/img/betterleaks/03-report.png)
