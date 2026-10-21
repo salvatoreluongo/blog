@@ -196,6 +196,16 @@ body.menu-open { overflow: hidden; }
 .toc a { display: block; padding: 7px 10px; margin: 0 -10px; border-radius: 10px; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 16.5px; line-height: 1.4; transition: background .15s, color .15s; }
 .toc a:hover { background: var(--accent); color: #fff; }
 .post-content h2[id] { scroll-margin-top: 100px; }
+
+/* Lightbox (zoom immagini) */
+.lightbox { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px; overflow: auto; background: rgba(10,12,16,.72); backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); cursor: zoom-out; animation: lbfade .18s ease; }
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 94vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 24px 80px rgba(0,0,0,.55); cursor: zoom-in; object-fit: contain; transition: transform .2s ease; }
+.lightbox img.zoom { transform: scale(1.9); cursor: zoom-out; }
+.lb-close { position: fixed; top: 16px; right: 20px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgba(255,255,255,.14); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
+.lb-close:hover { background: rgba(255,255,255,.26); }
+body.lb-open { overflow: hidden; }
+@keyframes lbfade { from { opacity: 0; } to { opacity: 1; } }
 .post-content table { width: 100%; border-collapse: collapse; font-size: 16px; margin: 1.6em 0; display: block; overflow-x: auto; }
 .post-content th, .post-content td { border-bottom: 1px solid var(--line); padding: 10px 12px; text-align: left; }
 .post-content hr { border: 0; border-top: 1px solid var(--line); margin: 2.4em 0; }

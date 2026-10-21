@@ -136,6 +136,23 @@
     });
   }
 
+  // Lightbox: clic su un'immagine dell'articolo -> si apre grande su sfondo sfocato, con zoom
+  const lbImgs = document.querySelectorAll(".post-content img");
+  if (lbImgs.length) {
+    const lb = document.createElement("div");
+    lb.className = "lightbox"; lb.hidden = true;
+    lb.innerHTML = '<img alt=""><button class="lb-close" type="button" aria-label="Chiudi">&times;</button>';
+    document.body.appendChild(lb);
+    const big = lb.querySelector("img");
+    let zoomed = false;
+    const open = (src) => { big.src = src; lb.hidden = false; zoomed = false; big.classList.remove("zoom"); document.body.classList.add("lb-open"); };
+    const close = () => { lb.hidden = true; big.src = ""; document.body.classList.remove("lb-open"); };
+    lbImgs.forEach((im) => { im.style.cursor = "zoom-in"; im.addEventListener("click", () => open(im.currentSrc || im.src)); });
+    big.addEventListener("click", (e) => { e.stopPropagation(); zoomed = !zoomed; big.classList.toggle("zoom", zoomed); });
+    lb.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) close(); });
+  }
+
   // Pagina Categorie: mostra solo la categoria selezionata
   const catFilter = document.getElementById("cat-filter");
   if (catFilter) {

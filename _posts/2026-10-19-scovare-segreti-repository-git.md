@@ -4,25 +4,20 @@ date: 2026-10-19 11:00:00 +0200
 categories: [Sicurezza]
 image: /assets/img/betterleaks/cover.png
 description: "Password e chiavi API finite per sbaglio in un commit restano nella storia del repository per sempre. Con BetterLeaks le trovi prima tu — ecco come, passo per passo."
-fonte: https://hackerjournal.it/15684/scova-i-dati-sensibili-nei-repository-git/
-fonte_titolo: "Scova i dati sensibili nei repository GIT"
-fonte_nome: "Hacker Journal"
 published: false
 ---
 
 <!--
-  BOZZA — non ancora pubblicata.
-  Da fare prima di pubblicare:
-  1) provare i comandi su Kali: BetterLeaks richiede una versione recente di Go;
-     al primo `make build` Go scarica da solo la toolchain giusta (serve internet).
-     Conferma la sintassi con `./betterleaks --help`.
-  2) usa il repo di prova "nova-shop-api" (quello con le chiavi FINTE) per gli screenshot;
-  3) metti le TUE schermate in  assets/img/betterleaks/  con questi nomi:
-     cover.png, 01-build.png, 02-scan.png, 03-report.png, 04-github.png
-  4) quando è pronto, cambia  published: false  in  published: true.
+  BOZZA. Schermate in assets/img/betterleaks/: cover.png, blog-retro.png,
+  02-scan.png, 03-report.png, 04-github.png. Quando è pronto: published: true.
 -->
 
-Qualche sera fa ho ripescato una **vecchia versione del mio blog** — roba stile 2003, tabelle, contatore delle visite e la home piena di notizie dell'epoca. Curiosando nel codice, ci ho trovato di tutto: la chiave delle Google Maps in chiaro dentro lo `<script>` e un token per il deploy su GitHub, lì in bella vista dentro una pagina HTML. È il promemoria perfetto di un problema che riguarda chiunque scriva codice.
+Per questo articolo ho voluto ricostruire una **vecchia versione del mio blog** — stile 2003, tabelle, contatore delle visite e la home piena di notizie dell'epoca — e nasconderci dentro quello che càpita davvero di dimenticare nel codice: una chiave delle **Google Maps** in chiaro dentro lo `<script>` e un **token per il deploy** su GitHub. Poi ci ho puntato contro uno **scanner di segreti**, per vedere quanto in fretta li tira fuori. È il modo più concreto per capire un problema che riguarda chiunque scriva codice.
+
+Il repository di prova che ho creato è pubblico, se vuoi curiosare: [**salvatoreluongo/betterleaks-demo-lab**](https://github.com/salvatoreluongo/betterleaks-demo-lab).
+
+![La vecchia versione del blog che ho ricreato per la prova, con le chiavi nascoste nel codice](/blog/assets/img/betterleaks/blog-retro.png)
+*La vecchia versione del blog che ho ricreato per la prova, con le chiavi nascoste nel codice*
 
 Capita a tutti, prima o poi: incolli una **chiave API** o una **password** dentro un file per fare una prova veloce, fai il commit, e te ne dimentichi. Magari il giorno dopo la togli — ma è già tardi. In Git, quello che cancelli **resta nella storia** del repository: basta scorrere i vecchi commit per ritrovarlo intatto. Si sono visti casi di chiavi d'accesso a un server rimaste pubbliche su GitHub per **anni**, dentro il codice di un fornitore, senza che nessuno se ne accorgesse.
 
@@ -34,7 +29,7 @@ La buona notizia è che puoi fare la stessa cosa **tu, prima**: passare al setac
 
 ## Cos'è BetterLeaks
 
-**BetterLeaks** è uno strumento a riga di comando, scritto in Go, che analizza il codice alla ricerca di **credenziali** lasciate in chiaro: chiavi AWS, token di GitHub o Slack, chiavi Stripe, chiavi private… Non guarda solo i file attuali: sa leggere l'**intera cronologia** di un repository Git, e può puntare direttamente a un repository pubblico su GitHub o GitLab senza nemmeno clonarlo. I risultati si esportano in JSON, CSV o Markdown.
+**BetterLeaks** è uno strumento a riga di comando, scritto in Go, che analizza il codice alla ricerca di **credenziali** lasciate in chiaro: chiavi di Google, token di GitHub o Slack, chiavi AWS, chiavi private… Non guarda solo i file attuali: sa leggere l'**intera cronologia** di un repository Git, e può puntare direttamente a un repository pubblico su GitHub o GitLab senza nemmeno clonarlo. I risultati si possono salvare in un file JSON.
 
 ## Installazione su Kali
 
@@ -54,54 +49,48 @@ Nota: BetterLeaks richiede una versione di Go abbastanza recente; al primo `make
 ./betterleaks version
 ```
 
-## Scansionare la cronologia di un repository
+## Scansione locale
 
-Spostati nella cartella di un repository e lancia la scansione della **storia completa**:
-
-```
-./betterleaks git /percorso/del/tuo/repo
-```
-
-Per ogni segreto trovato, BetterLeaks ti mostra il **tipo** (chiave AWS, token GitHub, chiave privata…), il **file**, la **riga** e il **commit** in cui è comparso. Aggiungi `-v` per vedere più dettagli a schermo.
-
-![BetterLeaks segnala i segreti trovati nella storia del repository](/blog/assets/img/betterleaks/02-scan.png)
-*BetterLeaks segnala i segreti trovati nella storia del repository*
-
-Un punto importante: BetterLeaks scava in **tutti i commit**, quindi trova i segreti anche nei file che hai *cancellato* in seguito — perché restano comunque nella cronologia. Se invece vuoi controllare solo i file così come sono adesso, usa la modalità cartella:
+Cloni (o entri in) un repository e lanci la scansione della sua **storia completa**. Aggiungi `-v` per vedere più dettagli a schermo:
 
 ```
-./betterleaks dir /percorso -v
+./betterleaks git betterleaks-demo-lab
 ```
 
-## Salvare un referto
+Per ogni segreto trovato, BetterLeaks ti mostra il **tipo** (chiave Google, token GitHub…), il **file**, la **riga** e il **commit** in cui è comparso, con tanto di livello di confidenza.
 
-In un contesto reale conviene conservare i risultati. Con `-o` (output) esporti il report in un file JSON:
+![Scansione locale: BetterLeaks trova le chiavi nella storia del repository](/blog/assets/img/betterleaks/02-scan.png)
+*Scansione locale della cronologia del repo &mdash; comando: `./betterleaks git betterleaks-demo-lab`*
+
+Un punto importante: BetterLeaks scava in **tutti i commit**, quindi trova i segreti anche nei file che hai *cancellato* in seguito — perché restano comunque nella cronologia. Se invece vuoi controllare solo i file così come sono adesso, usa la modalità cartella con `./betterleaks dir /percorso -v`.
+
+Per conservare i risultati — cosa quasi obbligatoria in un contesto serio — esporti il report in un file JSON con `-o`:
 
 ```
-./betterleaks git . -o report.json
+./betterleaks git betterleaks-demo-lab -o report.json
 ```
 
-![Il report prodotto da BetterLeaks](/blog/assets/img/betterleaks/03-report.png)
-*Il report prodotto da BetterLeaks*
+![Il report JSON prodotto da BetterLeaks](/blog/assets/img/betterleaks/03-report.png)
+*Il referto salvato su file &mdash; comando: `./betterleaks git betterleaks-demo-lab -o report.json`*
 
-## Scansionare un repository GitHub al volo
+## Scansione online
 
 La parte più comoda: puoi puntare BetterLeaks **direttamente a un repository pubblico**, senza clonarlo, passando l'URL:
 
 ```
-./betterleaks github https://github.com/UTENTE/REPO
+./betterleaks github https://github.com/salvatoreluongo/betterleaks-demo-lab
 ```
 
 È il modo più rapido per controllare un progetto — il tuo, o uno di cui hai la responsabilità — prima che lo faccia qualcun altro.
 
-![La scansione di un repository GitHub direttamente dall'URL](/blog/assets/img/betterleaks/04-github.png)
-*La scansione di un repository GitHub direttamente dall'URL*
+![Scansione online di un repository GitHub direttamente dall'URL](/blog/assets/img/betterleaks/04-github.png)
+*Scansione online dall'URL del repository &mdash; comando: `./betterleaks github https://github.com/salvatoreluongo/betterleaks-demo-lab`*
 
 ## Hai trovato un segreto: e adesso?
 
 Questa è la parte che in tanti sbagliano. Se scopri una chiave esposta, **cancellare il commit non basta**: potrebbe essere già stata copiata, e comunque resta nei cloni e nei fork altrui. L'ordine giusto è:
 
-1. **revoca o rigenera** subito la chiave sul servizio che l'ha emessa (AWS, GitHub, Stripe…): è l'unica mossa che la rende davvero inutile;
+1. **revoca o rigenera** subito la chiave sul servizio che l'ha emessa (Google, GitHub, AWS…): è l'unica mossa che la rende davvero inutile;
 2. solo dopo, **ripulisci la storia** del repository (per esempio con `git filter-repo` o lo strumento BFG) per togliere il segreto dai vecchi commit;
 3. aggiorna i collaboratori, perché dovranno riallineare i loro cloni.
 
