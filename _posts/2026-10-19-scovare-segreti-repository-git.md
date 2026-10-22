@@ -4,13 +4,8 @@ date: 2026-10-19 11:00:00 +0200
 categories: [Sicurezza]
 image: /assets/img/betterleaks/cover.png
 description: "Password e chiavi API finite per sbaglio in un commit restano nella storia del repository per sempre. Con BetterLeaks le trovi prima tu — ecco come, passo per passo."
-published: false
+published: true
 ---
-
-<!--
-  BOZZA. Schermate in assets/img/betterleaks/: cover.png, blog-retro.png,
-  02-scan.png, 03-report.png, 04-github.png. Quando è pronto: published: true.
--->
 
 Per questo articolo ho ricostruito una **vecchia versione del mio blog** e ci ho nascosto dentro quello che càpita davvero di dimenticare nel codice: una chiave di **Google Maps** in chiaro dentro lo `<script>` e un **token di deploy** per GitHub. Poi ci ho puntato contro un **secret scanner**, per vedere quanto in fretta li tira fuori. È il modo più concreto per capire un problema che riguarda chiunque scriva codice.
 
