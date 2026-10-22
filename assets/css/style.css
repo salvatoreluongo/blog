@@ -41,7 +41,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--body); font-family: var(--font); -webkit-font-smoothing: antialiased; transition: background .3s ease, color .3s ease; }
 a { color: inherit; }
 img { max-width: 100%; }
-.container { max-width: 780px; margin: 0 auto; padding: 0 20px; }
+.container { max-width: 840px; margin: 0 auto; padding: 0 20px; }
 .muted { color: var(--muted); }
 
 /* ── Barra di lettura ─────────────────────────────── */
@@ -82,7 +82,7 @@ body:not(.is-post) .progress { display: none; }   /* la barra di lettura solo ne
 }
 
 /* ── Pagine elenco piu ampie (home, categorie, archivio) ── */
-body:not(.is-post) .container { max-width: 1120px; }
+body:not(.is-post) .container { max-width: 1240px; }
 .avatar { width: 56px; height: 56px; border-radius: 50%; background: #111; object-fit: cover; display: block; }
 .brand { font-weight: 700; font-size: 18px; color: var(--ink); flex: 1; opacity: 0; transition: opacity .2s; }
 @media (min-width: 700px) { .brand { opacity: 1; } }
