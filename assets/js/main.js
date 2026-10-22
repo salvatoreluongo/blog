@@ -214,39 +214,68 @@
   });
 })();
 
-// Terminale "vivo" nella hero: scrive il comando e rivela il loop, poi ricomincia.
+// Terminale "vivo" nella hero: digita il comando e poi il loop, una volta sola.
 (function () {
   const term = document.querySelector(".hero-terminal");
   if (!term) return;
   const cmd = term.querySelector(".t-cmd");
-  const lines = [...term.querySelectorAll(".terminal-code .l")];
-  if (!cmd || !lines.length) return;
+  const code = term.querySelector(".terminal-code");
+  const cmdCursor = term.querySelector(".terminal-command .terminal-cursor");
+  if (!cmd || !code) return;
 
-  // Se l'utente preferisce meno animazioni, lascia tutto statico.
+  // Se l'utente preferisce meno animazioni, lascia tutto statico (il codice è già nel markup).
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduce) return;
 
-  term.classList.add("anim");
-  const text = cmd.getAttribute("data-cmd") || cmd.textContent;
+  // Il codice da "scrivere", riga per riga, con i colori (classe per ogni pezzo).
+  const LINES = [
+    [["while", "c-kw"], [" (", ""], ["learning", "c-var"], [")", ""], [" ", ""], ["{", "c-pn"]],
+    [["  ", ""], ["study", "c-fn"], ["();", "c-pn"]],
+    [["  ", ""], ["replicate", "c-fn"], ["();", "c-pn"]],
+    [["  ", ""], ["improve", "c-fn"], ["();", "c-pn"]],
+    [["}", "c-pn"]],
+  ];
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const CUR = '<span class="terminal-cursor">▋</span>';
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  let stop = false;
+  const cmdText = cmd.getAttribute("data-cmd") || cmd.textContent;
 
-  async function cycle() {
-    while (!stop) {
-      cmd.textContent = "";
-      lines.forEach((l) => l.classList.remove("show"));
-      await sleep(600);
-      // scrive il comando lettera per lettera
-      for (let i = 0; i < text.length && !stop; i++) {
-        cmd.textContent += text[i];
-        await sleep(55 + Math.random() * 45);
+  // Disegna il codice fino alla posizione (li, ti, ci) con il cursore in coda.
+  function draw(li, ti, ci) {
+    let html = "";
+    for (let l = 0; l <= li; l++) {
+      html += '<span class="l">';
+      const line = LINES[l];
+      const lastT = l === li ? ti : line.length - 1;
+      for (let t = 0; t <= lastT; t++) {
+        const [txt, cls] = line[t];
+        const part = esc(l === li && t === ti ? txt.slice(0, ci) : txt);
+        html += cls ? `<span class="${cls}">${part}</span>` : part;
       }
-      await sleep(350);
-      // rivela il loop riga per riga
-      for (const l of lines) { if (stop) break; l.classList.add("show"); await sleep(170); }
-      await sleep(3200); // resta visibile un po'
+      if (l === li) html += CUR;
+      html += "</span>";
     }
+    code.innerHTML = html;
   }
 
-  cycle();
+  async function run() {
+    cmd.textContent = "";
+    code.innerHTML = "";
+    await sleep(650);
+    // 1) digita il comando
+    for (let i = 0; i < cmdText.length; i++) { cmd.textContent += cmdText[i]; await sleep(60 + Math.random() * 45); }
+    await sleep(430);
+    if (cmdCursor) cmdCursor.style.display = "none"; // un solo cursore: passa al codice
+    // 2) digita il codice carattere per carattere
+    for (let l = 0; l < LINES.length; l++) {
+      for (let t = 0; t < LINES[l].length; t++) {
+        const txt = LINES[l][t][0];
+        for (let c = 1; c <= txt.length; c++) { draw(l, t, c); await sleep(34 + Math.random() * 34); }
+      }
+      await sleep(90); // piccola pausa a fine riga
+    }
+    // fine: resta tutto scritto, col cursore che lampeggia (nessun altro giro)
+  }
+
+  run();
 })();

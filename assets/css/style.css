@@ -316,16 +316,7 @@ textarea.cform-in { resize: vertical; min-height: 96px; }
 .terminal-code .c-fn  { color: #5bd86a; }   /* funzioni */
 .terminal-code .c-pn  { color: #c3cfdb; }   /* parentesi e ; */
 
-/* Animazione "scrittura" (solo con JS, solo desktop) */
-.hero-terminal.anim .terminal-code .l { opacity: 0; transform: translateY(2px); }
-.hero-terminal.anim .terminal-code .l.show { opacity: 1; transform: none; transition: opacity .22s ease, transform .22s ease; }
-@media (prefers-reduced-motion: reduce) {
-  .hero-terminal.anim .terminal-code .l { opacity: 1; transform: none; }
-  .terminal-cursor { animation: none; }
-}
-
-.terminal-rule { background: rgba(255,255,255,.1); height: 1px; margin: 13px 0 11px; }
-.terminal-output { font: 500 10px/1.6 ui-monospace,Menlo,Consolas,monospace; color: #8da0b2; letter-spacing: .02em; }
+@media (prefers-reduced-motion: reduce) { .terminal-cursor { animation: none; } }
 
 /* Intestazioni di sezione */
 .home-featured, .home-latest { margin-top: 44px; }
