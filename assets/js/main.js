@@ -213,3 +213,40 @@
     });
   });
 })();
+
+// Terminale "vivo" nella hero: scrive il comando e rivela il loop, poi ricomincia.
+(function () {
+  const term = document.querySelector(".hero-terminal");
+  if (!term) return;
+  const cmd = term.querySelector(".t-cmd");
+  const lines = [...term.querySelectorAll(".terminal-code .l")];
+  if (!cmd || !lines.length) return;
+
+  // Se l'utente preferisce meno animazioni, lascia tutto statico.
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) return;
+
+  term.classList.add("anim");
+  const text = cmd.getAttribute("data-cmd") || cmd.textContent;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  let stop = false;
+
+  async function cycle() {
+    while (!stop) {
+      cmd.textContent = "";
+      lines.forEach((l) => l.classList.remove("show"));
+      await sleep(600);
+      // scrive il comando lettera per lettera
+      for (let i = 0; i < text.length && !stop; i++) {
+        cmd.textContent += text[i];
+        await sleep(55 + Math.random() * 45);
+      }
+      await sleep(350);
+      // rivela il loop riga per riga
+      for (const l of lines) { if (stop) break; l.classList.add("show"); await sleep(170); }
+      await sleep(3200); // resta visibile un po'
+    }
+  }
+
+  cycle();
+})();

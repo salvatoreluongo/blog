@@ -2,8 +2,8 @@
 #  Impostazioni del blog (le uniche da toccare sono qui sopra)
 # ─────────────────────────────────────────────────────────────
 title: "Salvatore Luongo"
-tagline: "Cybersecurity, tecnologia e prove sul campo"
-description: "Articoli di cybersecurity e tecnologia: provo in prima persona strumenti e tecniche e racconto com'è andata."
+tagline: "Diario di laboratorio"
+description: "Provo in prima persona strumenti e tecniche — sicurezza, forensics, sistemi e tutto ciò che mi incuriosisce — e racconto com'è andata."
 lang: it-IT
 timezone: Europe/Rome
 

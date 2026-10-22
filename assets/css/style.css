@@ -300,12 +300,32 @@ textarea.cform-in { resize: vertical; min-height: 96px; }
 .terminal-square { margin-left: auto; color: #657587; }
 .terminal-content { padding: 22px 20px 23px; }
 .terminal-content p { font: 500 12px/2.1 ui-monospace,Menlo,Consolas,monospace; color: #c8d4df; margin: 0; }
-.terminal-content .terminal-command { color: #ff9b72; margin-bottom: 10px; }
-.terminal-command b { color: #7ae2b3; margin-right: 8px; }
-.terminal-cursor { color: #fda47f; }
-.terminal-green { color: #70d2a7; margin-right: 8px; }
-.terminal-rule { background: rgba(255,255,255,.1); height: 1px; margin: 14px 0 11px; }
-.terminal-output { font: 500 9px/1.6 ui-monospace,Menlo,Consolas,monospace; color: #8da0b2; letter-spacing: .02em; }
+.terminal-content .terminal-command { margin-bottom: 4px; white-space: nowrap; }
+.terminal-command .t-user { color: #7ae2b3; }
+.terminal-command .t-punct { color: #657587; }
+.terminal-command .t-path { color: #6fb1d8; }
+.terminal-command .t-cmd { color: #e6c074; }
+.terminal-cursor { color: #ff9b72; animation: tblink 1.05s steps(1) infinite; }
+@keyframes tblink { 0%,50% { opacity: 1; } 50.01%,100% { opacity: 0; } }
+
+/* Loop colorato stile editor */
+.terminal-code { margin: 10px 0 2px; white-space: pre; font: 600 13px/1.2 ui-monospace,Menlo,Consolas,monospace; }
+.terminal-code .l { display: block; }
+.terminal-code .c-kw  { color: #ff5fa2; }   /* while */
+.terminal-code .c-var { color: #35d6e8; }   /* learning */
+.terminal-code .c-fn  { color: #5bd86a; }   /* funzioni */
+.terminal-code .c-pn  { color: #c3cfdb; }   /* parentesi e ; */
+
+/* Animazione "scrittura" (solo con JS, solo desktop) */
+.hero-terminal.anim .terminal-code .l { opacity: 0; transform: translateY(2px); }
+.hero-terminal.anim .terminal-code .l.show { opacity: 1; transform: none; transition: opacity .22s ease, transform .22s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-terminal.anim .terminal-code .l { opacity: 1; transform: none; }
+  .terminal-cursor { animation: none; }
+}
+
+.terminal-rule { background: rgba(255,255,255,.1); height: 1px; margin: 13px 0 11px; }
+.terminal-output { font: 500 10px/1.6 ui-monospace,Menlo,Consolas,monospace; color: #8da0b2; letter-spacing: .02em; }
 
 /* Intestazioni di sezione */
 .home-featured, .home-latest { margin-top: 44px; }
