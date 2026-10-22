@@ -223,10 +223,6 @@
   const cmdCursor = term.querySelector(".terminal-command .terminal-cursor");
   if (!cmd || !code) return;
 
-  // Se l'utente preferisce meno animazioni, lascia tutto statico (il codice è già nel markup).
-  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce) return;
-
   // Il codice da "scrivere", riga per riga, con i colori (classe per ogni pezzo).
   const LINES = [
     [["while", "c-kw"], [" (", ""], ["learning", "c-var"], [")", ""], [" ", ""], ["{", "c-pn"]],
@@ -239,6 +235,21 @@
   const CUR = '<span class="terminal-cursor">▋</span>';
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const cmdText = cmd.getAttribute("data-cmd") || cmd.textContent;
+
+  // Codice completo (senza cursore), usato come fallback statico.
+  function renderFull() {
+    let html = "";
+    for (const line of LINES) {
+      html += '<span class="l">';
+      for (const [txt, cls] of line) html += cls ? `<span class="${cls}">${esc(txt)}</span>` : esc(txt);
+      html += "</span>";
+    }
+    return html;
+  }
+
+  // Se l'utente preferisce meno animazioni: niente typing, mostra tutto subito.
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) { cmd.textContent = cmdText; code.innerHTML = renderFull(); return; }
 
   // Disegna il codice fino alla posizione (li, ti, ci) con il cursore in coda.
   function draw(li, ti, ci) {
