@@ -98,8 +98,7 @@ La parte più comoda: puoi puntare BetterLeaks **direttamente a un repository pu
 Questa è la parte che in tanti sbagliano. Se scopri una chiave esposta, **cancellare il commit non basta**: potrebbe essere già stata copiata, e comunque resta nei cloni e nei fork altrui. L'ordine giusto è:
 
 1. **revoca o rigenera** subito la chiave sul servizio che l'ha emessa (Google, GitHub, AWS…): è l'unica mossa che la rende davvero inutile;
-2. solo dopo, **ripulisci la storia** del repository (per esempio con `git filter-repo` o lo strumento BFG) per togliere il secret dai vecchi commit;
-3. aggiorna i collaboratori, perché dovranno riallineare i loro cloni.
+2. solo dopo, **ripulisci la storia** del repository (per esempio con `git filter-repo` o lo strumento BFG) per togliere il secret dai vecchi commit.
 
 ## In sintesi
 
