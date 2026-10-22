@@ -41,7 +41,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--body); font-family: var(--font); -webkit-font-smoothing: antialiased; transition: background .3s ease, color .3s ease; }
 a { color: inherit; }
 img { max-width: 100%; }
-.container { max-width: 840px; margin: 0 auto; padding: 0 20px; }
+.container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .muted { color: var(--muted); }
 
 /* ── Barra di lettura ─────────────────────────────── */
