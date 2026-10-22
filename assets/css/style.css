@@ -197,6 +197,12 @@ body.menu-open { overflow: hidden; }
 .toc a:hover { background: var(--accent); color: #fff; }
 .post-content h2[id] { scroll-margin-top: 100px; }
 
+/* Box "Potrebbe interessarti" inline */
+.readalso { display: flex; flex-direction: column; gap: 4px; background: var(--source-bg); border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin: 1.8em 0; }
+.readalso-k { font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); }
+.readalso a { color: var(--ink); font-weight: 700; text-decoration: none; font-size: 16.5px; line-height: 1.4; }
+.readalso a:hover { color: var(--accent); text-decoration: underline; }
+
 /* Lightbox (zoom immagini) */
 .lightbox { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px; overflow: auto; background: rgba(10,12,16,.72); backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); cursor: zoom-out; animation: lbfade .18s ease; }
 .lightbox[hidden] { display: none; }

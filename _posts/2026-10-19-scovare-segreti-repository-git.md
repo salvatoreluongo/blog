@@ -12,7 +12,7 @@ published: false
   02-scan.png, 03-report.png, 04-github.png. Quando è pronto: published: true.
 -->
 
-Per questo articolo ho ricostruito una **vecchia versione del mio blog** e ci ho nascosto dentro quello che càpita davvero di dimenticare nel codice: una chiave delle **Google Maps** in chiaro dentro lo `<script>` e un **token di deploy** per GitHub. Poi ci ho puntato contro un **secret scanner**, per vedere quanto in fretta li tira fuori. È il modo più concreto per capire un problema che riguarda chiunque scriva codice.
+Per questo articolo ho ricostruito una **vecchia versione del mio blog** e ci ho nascosto dentro quello che càpita davvero di dimenticare nel codice: una chiave di **Google Maps** in chiaro dentro lo `<script>` e un **token di deploy** per GitHub. Poi ci ho puntato contro un **secret scanner**, per vedere quanto in fretta li tira fuori. È il modo più concreto per capire un problema che riguarda chiunque scriva codice.
 
 Il repository di prova che ho creato è pubblico, se vuoi curiosare: [**salvatoreluongo/betterleaks-demo-lab**](https://github.com/salvatoreluongo/betterleaks-demo-lab).
 
@@ -22,6 +22,11 @@ Il repository di prova che ho creato è pubblico, se vuoi curiosare: [**salvator
 Capita a tutti, prima o poi: incolli una **chiave API** o una **password** dentro un file per fare una prova veloce, fai il commit, e te ne dimentichi. Magari il giorno dopo la togli — ma è già tardi. In Git, quello che cancelli **resta nella storia** del repository: basta scorrere i vecchi commit per ritrovarlo intatto.
 
 E non è un caso di scuola. Nel 2022 **Toyota** ha ammesso che una chiave d'accesso a un server era rimasta pubblica su GitHub per **quasi cinque anni**, finita lì nel codice di un fornitore: nel frattempo erano potenzialmente esposti i dati di circa **300.000 clienti**. Un errore di un attimo, pagato per anni.
+
+<aside class="readalso">
+  <span class="readalso-k">Potrebbe interessarti</span>
+  <a href="https://blog.gitguardian.com/toyota-accidently-exposed-a-secret-key-publicly-on-github-for-five-years/" target="_blank" rel="noopener">Il caso Toyota: una chiave d'accesso rimasta pubblica su GitHub per cinque anni</a>
+</aside>
 
 E non devi nemmeno pubblicare per sbaglio: là fuori ci sono **bot** che scandagliano i repository pubblici 24 ore su 24 proprio in cerca di secret dimenticati. Una chiave esposta per pochi minuti può bastare.
 
