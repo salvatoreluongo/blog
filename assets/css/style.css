@@ -263,6 +263,9 @@ textarea.cform-in { resize: vertical; min-height: 96px; }
 /* ── Footer e pulsante "torna su" ─────────────────── */
 .site-footer { color: var(--muted); font-size: 14px; padding-top: 40px; padding-bottom: 50px; border-top: 1px solid var(--line); margin-top: 40px; }
 .site-footer a { color: var(--muted); }
+.footer-tools { margin-top: 6px; }
+.footer-tools a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.footer-tools a:hover { text-decoration: underline; }
 .to-top { position: fixed; right: 16px; bottom: 22px; width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(90,90,90,.72); color: #fff; display: grid; place-items: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 150; }
 .to-top.show { opacity: 1; pointer-events: auto; }
 .to-top svg { width: 20px; height: 20px; }
