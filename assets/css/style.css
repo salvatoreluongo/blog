@@ -149,6 +149,7 @@ body.menu-open { overflow: hidden; }
 .share { display: flex; flex-wrap: wrap; gap: 12px; margin: 26px 0 8px; }
 .sh { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: #fff; border: 0; cursor: pointer; text-decoration: none; transition: transform .15s; }
 .sh:hover { transform: translateY(-2px); }
+@media (max-width: 600px) { .share { gap: 9px; } .sh { width: 38px; height: 38px; } .sh svg { width: 19px; height: 19px; } }
 .sh-li { background: #0a66c2; } .sh-fb { background: #1877f2; } .sh-x { background: #111; }
 .sh-wa { background: #25d366; } .sh-tg { background: #229ed9; } .sh-copy { background: var(--pill); color: var(--ink); }
 .sh-copy.ok { background: #2e7d32; color: #fff; animation: pop .3s ease; }
