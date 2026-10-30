@@ -1,7 +1,7 @@
 ---
 title: "WordPress Penetration Testing: dall'enumerazione alla reverse shell"
 date: 2026-10-29 10:30:00 +0200
-categories: [Sicurezza]
+categories: [Sicurezza, WordPress]
 image: /assets/img/wordpress/cover.png
 description: "Write-up HTB Academy: dal sito pubblico al virtual host WordPress, enumerazione con WPScan, due plugin vulnerabili (download non autenticato e LFI), fino alla RCE e a una reverse shell."
 published: true
