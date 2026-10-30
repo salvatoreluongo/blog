@@ -1,5 +1,5 @@
 ---
-title: "WordPress Penetration Testing: dall'enumerazione alla reverse shell con HTB Academy"
+title: "WordPress Penetration Testing: dall'enumerazione alla reverse shell"
 date: 2026-10-29 10:30:00 +0200
 categories: [Sicurezza]
 image: /assets/img/wordpress/cover.png
@@ -33,8 +33,6 @@ Il server ha risposto con **`HTTP/1.1 200 OK`** e con l’intestazione **`Server
 ![Prima ricognizione HTTP: la risposta 200 OK e l’header Apache/2.4.29 (Ubuntu).](/blog/assets/img/wordpress/headers.png)
 *Figura 2 — Prima ricognizione HTTP: la risposta 200 OK e l’header Apache/2.4.29 (Ubuntu)*
 
-In una ricognizione più ampia affiancherei a questo controllo una scansione di servizi con Nmap, ad esempio `nmap -sC -sV -p 80 10.129.2.37`. Durante il percorso abbiamo richiamato anche Nmap, ma **non ho conservato un suo output nelle evidenze selezionate**: per correttezza, le informazioni Apache riportate qui provengono dalla risposta `curl`.
-
 ### Gobuster: il risultato negativo è comunque utile
 
 Ho quindi usato **Gobuster** per cercare directory e file comuni sul sito principale:
@@ -52,7 +50,7 @@ Sono emersi percorsi come `/about.html`, `/contact.html`, `/css`, `/images`, `/i
 
 ## 2. Il passaggio decisivo: trovare il virtual host
 
-Per capire dove puntasse davvero il collegamento “Blog”, ho filtrato il sorgente della home con `curl` e `grep`:
+Cliccando sul collegamento “Blog” nella home, però, la pagina non si apriva: non veniva visualizzata. Ho capito così che il link non puntava a una risorsa dello stesso sito, ma a un indirizzo che il mio ambiente non riusciva a mostrare. Per capire dove puntasse davvero, ho filtrato il sorgente della home con `curl` e `grep`:
 
 ```bash
 curl -s http://10.129.2.37/ \
@@ -78,14 +76,14 @@ echo '10.129.2.37 blog.inlanefreight.local' | sudo tee -a /etc/hosts
 ![Aggiunta del nome blog.inlanefreight.local a /etc/hosts nella Pwnbox.](/blog/assets/img/wordpress/hosts.png)
 *Figura 5 — Aggiunta del nome blog.inlanefreight.local a /etc/hosts nella Pwnbox*
 
-Riaprendo `http://blog.inlanefreight.local/` sono arrivato all’**Inlanefreight Employee Portal**. Questa volta la pagina era diversa: stavamo parlando con il virtual host corretto e potevamo finalmente analizzare WordPress.
+Riaprendo `http://blog.inlanefreight.local/` sono arrivato all’**Inlanefreight Employee Portal**. Questa volta la pagina era diversa: stavo parlando con il virtual host corretto e potevo finalmente analizzare WordPress.
 
 ![Il blog WordPress è finalmente raggiungibile dopo la risoluzione locale del nome.](/blog/assets/img/wordpress/blog.png)
 *Figura 6 — Il blog WordPress è finalmente raggiungibile dopo la risoluzione locale del nome*
 
 **Prima lezione:** uno scanner di directory non sostituisce la comprensione dei collegamenti HTML, dei nomi DNS e dell’header HTTP `Host`. Un risultato negativo sul sito principale può dipendere semplicemente dal fatto che stiamo interrogando il sito sbagliato.
 
-## 3. Quale versione di WordPress è installata? Tre verifiche, non una
+## 3. Quale versione di WordPress è installata?
 
 Per ricavare la versione del CMS ho utilizzato **WPScan, Wappalyzer e il sorgente della pagina**. I risultati si sono confermati a vicenda: il blog eseguiva **WordPress 5.1.6**.
 
@@ -118,7 +116,7 @@ Wappalyzer è utile come riscontro rapido, ma non sostituisce una verifica diret
 
 ### Metodo 3 — Sorgente HTML, CSS e JavaScript
 
-Infine ho aperto il sorgente HTML (`Ctrl+U`) e cercato i riferimenti a `wp-includes`, `wp-content` e ai parametri `?ver=`. Nel nostro caso apparivano risorse come:
+Infine ho aperto il sorgente HTML (`Ctrl+U`) e cercato i riferimenti a `wp-includes`, `wp-content` e ai parametri `?ver=`. Nel mio caso apparivano risorse come:
 
 ```html
 .../wp-includes/css/dist/block-library/style.min.css?ver=5.1.6
@@ -158,7 +156,7 @@ Una volta identificato il core, ho allargato l’enumerazione ai componenti inst
 ![Enumerazione dei plugin installati, con versioni rilevate e readme consultati.](/blog/assets/img/wordpress/plugins.png)
 *Figura 11 — Enumerazione dei plugin installati, con versioni rilevate e readme consultati*
 
-È utile distinguere **versione individuata**, **software non aggiornato** e **vulnerabilità dimostrata**. Un avviso “out of date” non equivale automaticamente alla riuscita di un exploit. In questo assessment, invece, per due plugin siamo riusciti a ottenere una risposta concreta del server che dimostrava l’esposizione.
+È utile distinguere **versione individuata**, **software non aggiornato** e **vulnerabilità dimostrata**. Un avviso “out of date” non equivale automaticamente alla riuscita di un exploit. In questo assessment, invece, per due plugin sono riuscito a ottenere una risposta concreta del server che dimostrava l’esposizione.
 
 ### Directory indexing: quando il server mostra il contenuto delle cartelle
 
@@ -169,7 +167,7 @@ WPScan aveva segnalato anche un’altra configurazione rischiosa: il **directory
 
 In un’installazione correttamente configurata, l’assenza di una pagina indice non dovrebbe esporre automaticamente l’elenco dei file. Qui la directory era navigabile: è il tipo di comportamento che rende più semplice scoprire file caricati, backup e dati non destinati alla pubblicazione.
 
-Nel riepilogo dell’assessment il contenuto della flag è riportato come `HTB{d1sabl3_d1r3ct0ry_l1st1ng!}`; **lo screenshot allegato documenta l’esposizione del file**, non l’apertura del suo contenuto.
+Nel riepilogo dell’assessment questo controllo corrisponde a una flag dedicata; **lo screenshot allegato documenta l’esposizione del file**, non l’apertura del suo contenuto.
 
 ## 5. Enumerazione degli utenti: WPScan e controlli manuali
 
@@ -192,7 +190,7 @@ Oppure, se l’endpoint è esposto dalla configurazione, si può consultare la R
 curl -s 'http://blog.inlanefreight.local/wp-json/wp/v2/users' | jq
 ```
 
-Questi sono **due controlli manuali complementari** descritti dal modulo: nel nostro fascicolo fotografico, però, **il risultato verificato dell’enumerazione utenti è quello di WPScan**. Inoltre, un nome visualizzato come “Charlie Wiggins” non va automaticamente confuso con lo username utilizzabile per il login.
+Questi sono **due controlli manuali complementari** descritti dal modulo: nel mio fascicolo fotografico, però, **il risultato verificato dell’enumerazione utenti è quello di WPScan**. Inoltre, un nome visualizzato come “Charlie Wiggins” non va automaticamente confuso con lo username utilizzabile per il login.
 
 ## 6. Primo plugin vulnerabile: download senza autenticazione
 
@@ -202,18 +200,18 @@ Ho esaminato il comportamento del plugin **Email Subscribers 4.2.2**, che nel la
 curl -i 'http://blog.inlanefreight.local/wp-admin/admin.php?page=download_report&report=users&status=all'
 ```
 
-Il server ha risposto **`200 OK`** con un allegato denominato **`all-contacts.csv`**. Nel contenuto CSV era presente anche il valore della flag dell’assessment: `HTB{unauTh_d0wn10ad!}`.
+Il server ha risposto **`200 OK`** con un allegato denominato **`all-contacts.csv`**. Nel contenuto CSV era presente anche il valore della flag dell’assessment.
 
-Non si tratta di un comportamento isolato, ma di una vulnerabilità pubblica e catalogata: **CVE-2019-19985** — *«Email Subscribers & Newsletters ≤ 4.2.2 – Unauthenticated File Download / Information Disclosure»* — per la quale esiste un exploit documentato su **[Exploit-DB (EDB-ID 48698)](https://www.exploit-db.com/exploits/48698)**. L’endpoint `admin.php?page=download_report` restituisce il report (`report=users`) senza una verifica di autenticazione valida: è esattamente ciò che abbiamo osservato.
+Non si tratta di un comportamento isolato, ma di una vulnerabilità pubblica e catalogata: **CVE-2019-19985** — *«Email Subscribers & Newsletters ≤ 4.2.2 – Unauthenticated File Download / Information Disclosure»* — per la quale esiste un exploit documentato su **[Exploit-DB (EDB-ID 48698)](https://www.exploit-db.com/exploits/48698)**. L’endpoint `admin.php?page=download_report` restituisce il report (`report=users`) senza una verifica di autenticazione valida: è esattamente ciò che ho osservato.
 
 ![Download non autenticato di un report CSV tramite il plugin vulnerabile.](/blog/assets/img/wordpress/csv.png)
 *Figura 14 — Download non autenticato di un report CSV tramite il plugin vulnerabile*
 
-Questo è il punto decisivo: **non ci siamo limitati a leggere una scheda di vulnerabilità**. Abbiamo osservato un file effettivamente restituito dal server a una richiesta non autenticata. In un sito reale, un report di contatti o iscritti potrebbe contenere dati personali e diventare una violazione di riservatezza.
+Questo è il punto decisivo: **non mi sono limitato a leggere una scheda di vulnerabilità**. Ho osservato un file effettivamente restituito dal server a una richiesta non autenticata. In un sito reale, un report di contatti o iscritti potrebbe contenere dati personali e diventare una violazione di riservatezza.
 
 ## 7. Secondo plugin vulnerabile: leggere file locali con una LFI
 
-L’altro componente interessante era **Site Editor 1.1.1**. Abbiamo verificato una **Local File Inclusion (LFI)** attraverso un endpoint PHP del plugin che accettava un percorso controllato nella richiesta.
+L’altro componente interessante era **Site Editor 1.1.1**. Ho verificato una **Local File Inclusion (LFI)** attraverso un endpoint PHP del plugin che accettava un percorso controllato nella richiesta.
 
 Nel laboratorio la richiesta al file `ajax_shortcode_pattern.php`, con il parametro `ajax_path` che risaliva alle directory superiori fino a `/etc/passwd`, ha restituito il contenuto del file di sistema.
 
@@ -224,22 +222,13 @@ Anche questa è una vulnerabilità nota e catalogata: **CVE-2018-7422** — *«S
 
 Il risultato mostrava account Linux come `www-data`, `mysql`, `erika` e **`frank.mclane`**. La presenza di quest’ultimo rispondeva a una delle domande dell’assessment. Il file `/etc/passwd` consente di ricostruire identità, UID, home directory e shell configurate, ma **non contiene normalmente le password degli utenti**.
 
-La LFI è stata quindi **confermata dal contenuto della risposta**, non semplicemente ipotizzata in base alla versione del plugin. Da sola, tuttavia, questa lettura non dimostrava ancora l’esecuzione di comandi sul server: per la shell avremmo seguito un percorso differente.
+La LFI è stata quindi **confermata dal contenuto della risposta**, non semplicemente ipotizzata in base alla versione del plugin. Da sola, tuttavia, questa lettura non dimostrava ancora l’esecuzione di comandi sul server: per la shell ho seguito un percorso differente.
 
 ## 8. Dall’enumerazione al login WordPress
 
 Tra gli account individuati mi sono concentrato su **`erika`**. Nell’assessment ho usato WPScan per testare l’autenticazione attraverso l’endpoint XML-RPC con una wordlist, ottenendo una combinazione valida.
 
-Un piccolo intoppo ha riguardato il percorso della wordlist: inizialmente WPScan segnalava che `/usr/share/wordlists/rockyou.txt` non esisteva. È un problema dell’ambiente di test, non una protezione del sito; prima di ripetere un comando occorre controllare se il dizionario sia presente, eventualmente in formato compresso.
-
-```bash
-ls -lh /usr/share/wordlists/rockyou.txt*
-
-# Esempio, se il file presente è rockyou.txt.gz:
-sudo gzip -dk /usr/share/wordlists/rockyou.txt.gz
-```
-
-Una volta disponibile il file, la sintassi di WPScan per il test XML-RPC è:
+La sintassi di WPScan per il test XML-RPC è:
 
 ```bash
 wpscan --url http://blog.inlanefreight.local/ \
@@ -286,7 +275,7 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 ![La richiesta al template modificato esegue id come utente www-data.](/blog/assets/img/wordpress/rce.png)
 *Figura 18 — La richiesta al template modificato esegue id come utente www-data*
 
-A quel punto avevamo dimostrato una **Remote Code Execution** nel contesto del web server. Non era un accesso root: il processo PHP eseguiva i comandi come **`www-data`**, l’utente del servizio web. Ma era sufficiente per completare l’obiettivo successivo.
+A quel punto avevo dimostrato una **Remote Code Execution** nel contesto del web server. Non era un accesso root: il processo PHP eseguiva i comandi come **`www-data`**, l’utente del servizio web. Ma era sufficiente per completare l’obiettivo successivo.
 
 ## 10. Reverse shell: dal comando remoto alla sessione interattiva
 
@@ -344,7 +333,7 @@ Tra i file ho individuato **`d0ecaeee3a61e7dd23e0e5e4a67d603c_flag.txt`**. L’o
 ![Nel percorso /home/erika/ è individuato un file _flag.txt; qui non ne è ancora mostrato il contenuto.](/blog/assets/img/wordpress/flagfinal.png)
 *Figura 21 — Nel percorso /home/erika/ è individuato un file _flag.txt; qui non ne è ancora mostrato il contenuto*
 
-**Qui è importante non attribuirci un passaggio che la schermata non mostra:** abbiamo documentato **la presenza e i permessi del file**, ma **non abbiamo salvato l’output della sua lettura**. Per completare l’evidenza finale dell’ottava domanda occorrerebbe documentare anche il contenuto restituito, ad esempio attraverso una lettura mirata del file nel laboratorio.
+**Qui è importante non attribuirmi un passaggio che la schermata non mostra:** ho documentato **la presenza e i permessi del file**, ma **non ho salvato l’output della sua lettura**. Per completare l’evidenza finale dell’ottava domanda occorrerebbe documentare anche il contenuto restituito, ad esempio attraverso una lettura mirata del file nel laboratorio.
 
 È anche una lezione sulla gestione dei permessi Linux: **essere proprietario di un file non è la stessa cosa che esserne l’unico lettore**. Un file `root:root` con il bit di lettura per “others” può comunque essere letto da un processo non privilegiato.
 
@@ -418,7 +407,7 @@ La lezione principale è che **l’enumerazione fatta bene cambia completamente 
 
 Da lì, gli indizi si sono trasformati in prove: la versione del CMS è stata confermata da tre fonti, i plugin hanno restituito file che non avrebbero dovuto essere disponibili e l’accesso amministrativo ha permesso di intervenire su un template PHP. Alla fine, il processo web rispondeva a una shell remota.
 
-**Il risultato non dipende da un solo comando, ma dall’ordine delle domande che ci poniamo.** Quale sito sto interrogando? Che cosa rivela? Quali componenti sono davvero presenti? Quello che sembra vulnerabile lo è anche nei fatti? Solo dopo aver risposto con evidenze ha senso passare al livello successivo.
+**Il risultato non dipende da un solo comando, ma dall’ordine delle domande che mi pongo.** Quale sito sto interrogando? Che cosa rivela? Quali componenti sono davvero presenti? Quello che sembra vulnerabile lo è anche nei fatti? Solo dopo aver risposto con evidenze ha senso passare al livello successivo.
 
 > **Nota di chiusura.** Nel laboratorio la modifica a `404.php` era necessaria per dimostrare l’RCE. Dopo la raccolta delle prove, in un test autorizzato si deve ripristinare il file originale e rimuovere qualsiasi meccanismo di accesso introdotto durante l’attività.
 
