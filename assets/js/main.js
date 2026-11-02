@@ -290,3 +290,20 @@
 
   run();
 })();
+
+/* Homepage: "Carica altri articoli" senza ricaricare la pagina */
+(function () {
+  var grid = document.querySelector('.hcards');
+  var btn = document.getElementById('load-more');
+  if (!grid || !btn) return;
+  var STEP = 4; // quanti articoli rivelare a ogni clic
+  btn.addEventListener('click', function () {
+    var hidden = grid.querySelectorAll('.hcard.is-more');
+    for (var i = 0; i < STEP && i < hidden.length; i++) {
+      hidden[i].classList.remove('is-more');
+    }
+    if (grid.querySelectorAll('.hcard.is-more').length === 0 && btn.parentNode) {
+      btn.parentNode.removeChild(btn);
+    }
+  });
+})();

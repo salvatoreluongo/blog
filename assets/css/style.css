@@ -332,6 +332,11 @@ textarea.cform-in { resize: vertical; min-height: 96px; }
 
 /* Schede home */
 .hcards { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px; }
+.hcard.is-more { display: none; }
+.hcards-more { display: flex; justify-content: center; margin-top: 30px; }
+.load-more-btn { cursor: pointer; font: 700 15px/1 inherit; padding: 14px 28px; border-radius: 999px; background: transparent; color: var(--accent); border: 1.5px solid var(--accent); transition: background .2s, color .2s, transform .15s; }
+.load-more-btn:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
+.load-more-btn:active { transform: translateY(0); }
 .hcard { min-width: 0; background: var(--card-bg); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; }
 .hcard:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(20,27,38,.1); }
 .hcard-cover { position: relative; display: block; aspect-ratio: 1.85; background: #202a37; overflow: hidden; }

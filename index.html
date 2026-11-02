@@ -49,12 +49,17 @@ title: Home
     <a class="section-all" href="{{ '/archivio/' | relative_url }}">Vai all'archivio ↗</a>
   </div>
   <div class="hcards">
-    {%- for post in site.posts offset: 1 limit: 6 -%}
-      {% include hcard.html post=post %}
+    {%- for post in site.posts offset: 1 -%}
+      {% if forloop.index > 6 %}{% include hcard.html post=post extra="is-more" %}{% else %}{% include hcard.html post=post %}{% endif %}
     {%- else -%}
     <p class="empty">Il primo articolo è in arrivo.</p>
     {%- endfor -%}
   </div>
+  {%- if site.posts.size > 7 -%}
+  <div class="hcards-more">
+    <button class="load-more-btn" id="load-more" type="button">Carica altri articoli</button>
+  </div>
+  {%- endif -%}
 </section>
 
 <section class="home-outro" id="segnala">
